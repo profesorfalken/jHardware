@@ -1,0 +1,54 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jutils.jhardware.info.memory;
+
+import java.util.Map;
+import org.jutils.jhardware.collector.UnixHardwareDataCollector;
+import org.jutils.jhardware.info.HardwareInfo;
+import org.jutils.jhardware.model.MemoryInfo;
+
+/**
+ * Information related to CPU
+ * 
+ * @author Javier Garcia Alonso
+ */
+public abstract class AbstractMemoryInfo implements HardwareInfo {
+
+    /**
+     * Get CPU information from OS
+     * 
+     * @return 
+     */
+    @Override
+    public MemoryInfo getInfo() {
+        String processorData = new UnixHardwareDataCollector().getMemoryData();
+        Map<String, String> dataMap = parseInfo(processorData);
+
+        return buildFromDataMap(dataMap);
+    }
+    
+    abstract protected Map<String, String> parseInfo(String data);
+    
+    private MemoryInfo buildFromDataMap(Map<String, String> dataMap) {
+        MemoryInfo info = new MemoryInfo();
+        info.setFullInfo(dataMap);
+        if (dataMap != null && !dataMap.isEmpty()) {
+            info.setAvailableMemory(dataMap.get("MemAvailable"));
+            info.setFreeMemory(dataMap.get("MemFree"));
+            info.setTotalMemory(dataMap.get("MemTotal"));
+        }
+        
+        return info;
+    }
+}

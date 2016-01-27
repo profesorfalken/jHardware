@@ -15,6 +15,7 @@ package org.jutils.jhardware;
 
 import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
+import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
 /**
@@ -25,6 +26,10 @@ import org.jutils.jhardware.model.ProcessorInfo;
 public class HardwareInfo {
     
     public static ProcessorInfo getProcessorInfo() {
-        return HardwareFactory.getInfo(InfoType.PROCESSOR).getInfo();
+        return (ProcessorInfo)HardwareFactory.getInfo(InfoType.PROCESSOR).getInfo();
+    }
+    
+    public static MemoryInfo getMemoryInfo() {
+        return (MemoryInfo)HardwareFactory.getInfo(InfoType.MEMORY).getInfo();
     }
 }

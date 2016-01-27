@@ -37,6 +37,18 @@ public class UnixHardwareDataCollector {
         });
         return buffer.toString();
     }
+    
+    public String getMemoryData(){
+        Stream<String> streamMemoryInfo = readFile(MEMINFO);
+        final StringBuilder buffer = new StringBuilder();
+        
+        streamMemoryInfo.forEach(new Consumer<String>() {
+            public void accept(String line) {
+                buffer.append(line).append("\r\n");                
+            }
+        });
+        return buffer.toString();
+    }
 
     public String getMotherBoardData(){
         return "";

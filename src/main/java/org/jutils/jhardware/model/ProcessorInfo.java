@@ -12,7 +12,7 @@ import java.io.Serializable;
  * 
  * @author Javier Garcia Alonso
  */
-public class ProcessorInfo implements Serializable{
+public class ProcessorInfo implements ComponentInfo{
     private String vendorId;
     private String family;
     private String model;

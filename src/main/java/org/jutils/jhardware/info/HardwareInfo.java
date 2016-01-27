@@ -13,7 +13,7 @@
  */
 package org.jutils.jhardware.info;
 
-import org.jutils.jhardware.model.ProcessorInfo;
+import org.jutils.jhardware.model.ComponentInfo;
 
 /**
  * Interface that represents a group of hardware information (cpu, memory, motherboard...)
@@ -21,5 +21,5 @@ import org.jutils.jhardware.model.ProcessorInfo;
  * @author Javier Garcia Alonso
  */
 public interface HardwareInfo {    
-    ProcessorInfo getInfo();
+    ComponentInfo getInfo();    
 }
