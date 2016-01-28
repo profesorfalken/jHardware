@@ -5,7 +5,7 @@
  */
 package org.jutils.jhardware.model;
 
-import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Model that encapsulates processor information
@@ -22,6 +22,8 @@ public class ProcessorInfo implements ComponentInfo{
     private String cacheSize;
     private String numCores;
     private String temperature;
+    
+    private Map<String, String> fullInfo;
 
     public String getVendorId() {
         return vendorId;
@@ -93,5 +95,13 @@ public class ProcessorInfo implements ComponentInfo{
 
     public void setTemperature(String temperature) {
         this.temperature = temperature;
+    }
+
+    public Map<String, String> getFullInfo() {
+        return fullInfo;
+    }
+
+    public void setFullInfo(Map<String, String> fullInfo) {
+        this.fullInfo = fullInfo;
     }
 }

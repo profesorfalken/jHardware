@@ -42,6 +42,8 @@ public abstract class AbstractProcessorInfo implements HardwareInfo {
     
     private ProcessorInfo buildFromDataMap(Map<String, String> dataMap) {
         ProcessorInfo info = new ProcessorInfo();
+        info.setFullInfo(dataMap);
+        
         if (dataMap != null && !dataMap.isEmpty()) {
             info.setCacheSize(dataMap.get("cache size"));
             info.setFamily(dataMap.get("cpu family"));
