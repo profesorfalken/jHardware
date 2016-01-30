@@ -11,17 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.processor;
+package org.jutils.jhardware.info.memory.windows;
 
+import org.jutils.jhardware.info.processor.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 
 /**
  * Information related to CPU
  * 
  * @author Javier Garcia Alonso
  */
-public final class WindowsProcessorInfo extends AbstractProcessorInfo {
+public final class WindowsMemoryInfo extends AbstractMemoryInfo {
 
     protected Map<String, String> parseInfo(String rawData) {
         Map<String, String> processorDataMap = new HashMap<String, String>();

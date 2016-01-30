@@ -13,10 +13,10 @@
  */
 package org.jutils.jhardware.info;
 
-import org.jutils.jhardware.info.memory.UnixMemoryInfo;
-import org.jutils.jhardware.info.memory.WindowsMemoryInfo;
-import org.jutils.jhardware.info.processor.UnixProcessorInfo;
-import org.jutils.jhardware.info.processor.WindowsProcessorInfo;
+import org.jutils.jhardware.info.memory.unix.UnixMemoryInfo;
+import org.jutils.jhardware.info.memory.windows.WindowsMemoryInfo;
+import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
+import org.jutils.jhardware.info.processor.windows.WindowsProcessorInfo;
 import org.jutils.jhardware.util.OSDetector;
 
 /**

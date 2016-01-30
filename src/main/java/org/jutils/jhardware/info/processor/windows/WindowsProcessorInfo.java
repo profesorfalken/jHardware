@@ -11,27 +11,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.processor;
+package org.jutils.jhardware.info.processor.windows;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 
 /**
  * Information related to CPU
  * 
  * @author Javier Garcia Alonso
  */
-public final class UnixProcessorInfo extends AbstractProcessorInfo {
+public final class WindowsProcessorInfo extends AbstractProcessorInfo {
 
     protected Map<String, String> parseInfo(String rawData) {
         Map<String, String> processorDataMap = new HashMap<String, String>();
         String[] dataStringLines = rawData.split("\\r?\\n");
 
-        for (final String dataLine : dataStringLines) {
-            String[] dataStringInfo = dataLine.split(":");
-            processorDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
-        }
+        //Line 1 CPUs infos
+        String lineInfos = dataStringLines[0];
+        String[] infos = lineInfos.split("\\s+");
+        processorDataMap.put("cpu family", infos[2]);
+        processorDataMap.put("model", infos[4]);
+        processorDataMap.put("stepping", infos[6]);
+
+        processorDataMap.put("model name", dataStringLines[1]);
+        processorDataMap.put("cpu MHz", dataStringLines[2]);
+        processorDataMap.put("vendor_id", dataStringLines[3]);
+        processorDataMap.put("cpu cores", dataStringLines[4]);
 
         return processorDataMap;
-    }    
+    }
 }

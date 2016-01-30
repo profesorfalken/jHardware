@@ -11,11 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.memory;
+package org.jutils.jhardware.info.memory.unix;
 
 import org.jutils.jhardware.info.processor.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 
 /**
  * Information related to CPU

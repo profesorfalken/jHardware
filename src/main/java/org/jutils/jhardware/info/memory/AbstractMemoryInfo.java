@@ -14,8 +14,7 @@
 package org.jutils.jhardware.info.memory;
 
 import java.util.Map;
-import org.jutils.jhardware.collector.UnixHardwareDataCollector;
-import org.jutils.jhardware.info.HardwareInfo;
+import org.jutils.jhardware.info.AbstractHardwareInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 
 /**
@@ -23,7 +22,7 @@ import org.jutils.jhardware.model.MemoryInfo;
  * 
  * @author Javier Garcia Alonso
  */
-public abstract class AbstractMemoryInfo implements HardwareInfo {
+public abstract class AbstractMemoryInfo extends AbstractHardwareInfo {
 
     /**
      * Get CPU information from OS
@@ -32,15 +31,13 @@ public abstract class AbstractMemoryInfo implements HardwareInfo {
      */
     @Override
     public MemoryInfo getInfo() {
-        String processorData = new UnixHardwareDataCollector().getMemoryData();
+        String processorData = getHardwareDataCollector().getMemoryData();
         Map<String, String> dataMap = parseInfo(processorData);
 
         return buildFromDataMap(dataMap);
     }
-    
-    abstract protected Map<String, String> parseInfo(String data);
-    
-    private MemoryInfo buildFromDataMap(Map<String, String> dataMap) {
+
+    protected MemoryInfo buildFromDataMap(Map<String, String> dataMap) {
         MemoryInfo info = new MemoryInfo();
         info.setFullInfo(dataMap);
         if (dataMap != null && !dataMap.isEmpty()) {
