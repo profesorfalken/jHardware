@@ -15,18 +15,34 @@ package org.jutils.jhardware.info.processor.unix;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
+import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  * Information related to CPU
  * 
  * @author Javier Garcia Alonso
  */
-public final class UnixProcessorInfo extends AbstractProcessorInfo {
+public final class UnixProcessorInfo extends AbstractProcessorInfo {    
+    private final static String CPUINFO = "/proc/cpuinfo";
 
-    protected Map<String, String> parseInfo(String rawData) {
+    public String getProcessorData() {
+        Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
+        final StringBuilder buffer = new StringBuilder();
+        
+        streamProcessorInfo.forEach(new Consumer<String>() {
+            public void accept(String line) {
+                buffer.append(line).append("\r\n");                
+            }
+        });
+        return buffer.toString();
+    }
+
+    protected Map<String, String> parseInfo() {
         Map<String, String> processorDataMap = new HashMap<String, String>();
-        String[] dataStringLines = rawData.split("\\r?\\n");
+        String[] dataStringLines = getProcessorData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split(":");

@@ -80,7 +80,7 @@ public class HardwareInfoTest {
         System.out.println("====================================");
         MemoryInfo info = HardwareInfo.getMemoryInfo();
 
-        assertTrue(info != null && info.getTotalMemory() != null);
+        assertTrue(info != null && info.getAvailableMemory() != null);
         
         System.out.println("Available Memory: " + info.getAvailableMemory());        
         System.out.println("Free Memory: " + info.getFreeMemory());

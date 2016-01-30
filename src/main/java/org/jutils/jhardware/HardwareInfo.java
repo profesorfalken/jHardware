@@ -26,10 +26,10 @@ import org.jutils.jhardware.model.ProcessorInfo;
 public class HardwareInfo {
     
     public static ProcessorInfo getProcessorInfo() {
-        return (ProcessorInfo)HardwareFactory.getInfo(InfoType.PROCESSOR).getInfo();
+        return (ProcessorInfo)HardwareFactory.get(InfoType.PROCESSOR).getInfo();
     }
     
     public static MemoryInfo getMemoryInfo() {
-        return (MemoryInfo)HardwareFactory.getInfo(InfoType.MEMORY).getInfo();
+        return (MemoryInfo)HardwareFactory.get(InfoType.MEMORY).getInfo();
     }
 }

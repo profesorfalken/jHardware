@@ -13,10 +13,12 @@
  */
 package org.jutils.jhardware.info.memory.unix;
 
-import org.jutils.jhardware.info.processor.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
+import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  * Information related to CPU
@@ -24,10 +26,23 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
  * @author Javier Garcia Alonso
  */
 public final class UnixMemoryInfo extends AbstractMemoryInfo {
+    private final static String MEMINFO = "/proc/meminfo";
+    
+    private String getMemoryData(){
+        Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO);
+        final StringBuilder buffer = new StringBuilder();
+        
+        streamMemoryInfo.forEach(new Consumer<String>() {
+            public void accept(String line) {
+                buffer.append(line).append("\r\n");                
+            }
+        });
+        return buffer.toString();
+    }
 
-    protected Map<String, String> parseInfo(String rawData) {
+    protected Map<String, String> parseInfo() {
         Map<String, String> processorDataMap = new HashMap<String, String>();
-        String[] dataStringLines = rawData.split("\\r?\\n");
+        String[] dataStringLines = getMemoryData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split(":");

@@ -13,8 +13,8 @@
  */
 package org.jutils.jhardware.info.memory.windows;
 
-import org.jutils.jhardware.info.processor.*;
-import java.util.HashMap;
+import com.profesorfalken.wmi4java.WMI4Java;
+import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 
@@ -25,21 +25,15 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
  */
 public final class WindowsMemoryInfo extends AbstractMemoryInfo {
 
-    protected Map<String, String> parseInfo(String rawData) {
-        Map<String, String> processorDataMap = new HashMap<String, String>();
-        String[] dataStringLines = rawData.split("\\r?\\n");
+    protected Map<String, String> parseInfo() {
+        Map<String, String> processorDataMap = 
+                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PERFFORMATTEDDATA_PERFOS_MEMORY);
+        processorDataMap.putAll(WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PHYSICALMEMORY));        
 
-        //Line 1 CPUs infos
-        String lineInfos = dataStringLines[0];
-        String[] infos = lineInfos.split("\\s+");
-        processorDataMap.put("cpu family", infos[2]);
-        processorDataMap.put("model", infos[4]);
-        processorDataMap.put("stepping", infos[6]);
-
-        processorDataMap.put("model name", dataStringLines[1]);
-        processorDataMap.put("cpu MHz", dataStringLines[2]);
-        processorDataMap.put("vendor_id", dataStringLines[3]);
-        processorDataMap.put("cpu cores", dataStringLines[4]);
+        processorDataMap.put("MemAvailable", processorDataMap.get("AvailableKBytes"));
+        processorDataMap.put("MemFree", 
+                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
+        processorDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
 
         return processorDataMap;
     }
