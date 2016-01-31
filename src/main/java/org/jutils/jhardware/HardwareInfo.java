@@ -19,16 +19,30 @@ import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
 /**
- * Static class that gives access to Hardware details.
+ * Static class that allows to query for Hardware details.<p>
+ * Each method return the information related with a different component 
+ * (CPU, memory, motherboard....). There are some important data that comes
+ * typed in the response. This is the information that is common in different 
+ * system. The complete and specific information is returned in a Map.
  * 
  * @author Javier Garcia Alonso
  */
 public class HardwareInfo {
     
+    /**
+     * Gets information related with CPU
+     * 
+     * @return object with typed common data and a map with full data
+     */
     public static ProcessorInfo getProcessorInfo() {
         return (ProcessorInfo)HardwareFactory.get(InfoType.PROCESSOR).getInfo();
     }
     
+    /**
+     * Gets information related with memory
+     * 
+     * @return object with typed common data and a map with full data
+     */
     public static MemoryInfo getMemoryInfo() {
         return (MemoryInfo)HardwareFactory.get(InfoType.MEMORY).getInfo();
     }
