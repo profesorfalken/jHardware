@@ -13,13 +13,18 @@
  */
 package org.jutils.jhardware.info;
 
-import org.jutils.jhardware.model.ComponentInfo;
-
 /**
- * Interface that represents a group of hardware information (cpu, memory, motherboard...)
- * 
+ *
  * @author Javier Garcia Alonso
  */
-public interface HardwareInfo {    
-    ComponentInfo getInfo();    
+public interface HardwareDataCollector {
+
+    String getGeneralData();
+
+    String getMemoryData();
+
+    String getMotherBoardData();
+
+    String getProcessorData();
+    
 }

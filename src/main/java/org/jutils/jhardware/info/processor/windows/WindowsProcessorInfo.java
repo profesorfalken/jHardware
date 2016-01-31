@@ -11,10 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.processor;
+package org.jutils.jhardware.info.processor.windows;
 
+import com.profesorfalken.wmi4java.WMI4Java;
+import com.profesorfalken.wmi4java.WMIClass;
 import java.util.HashMap;
 import java.util.Map;
+import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 
 /**
  * Information related to CPU
@@ -23,21 +26,21 @@ import java.util.Map;
  */
 public final class WindowsProcessorInfo extends AbstractProcessorInfo {
 
-    protected Map<String, String> parseInfo(String rawData) {
-        Map<String, String> processorDataMap = new HashMap<String, String>();
-        String[] dataStringLines = rawData.split("\\r?\\n");
+    protected Map<String, String> parseInfo() {
+        Map<String, String> processorDataMap = 
+                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PROCESSOR);  
 
         //Line 1 CPUs infos
-        String lineInfos = dataStringLines[0];
+        String lineInfos = processorDataMap.get("Description");
         String[] infos = lineInfos.split("\\s+");
         processorDataMap.put("cpu family", infos[2]);
         processorDataMap.put("model", infos[4]);
         processorDataMap.put("stepping", infos[6]);
 
-        processorDataMap.put("model name", dataStringLines[1]);
-        processorDataMap.put("cpu MHz", dataStringLines[2]);
-        processorDataMap.put("vendor_id", dataStringLines[3]);
-        processorDataMap.put("cpu cores", dataStringLines[4]);
+        processorDataMap.put("model name", processorDataMap.get("Name"));
+        processorDataMap.put("cpu MHz", processorDataMap.get("MaxClockSpeed"));
+        processorDataMap.put("vendor_id", processorDataMap.get("Manufacturer"));
+        processorDataMap.put("cpu cores", processorDataMap.get("NumberOfCores"));
 
         return processorDataMap;
     }

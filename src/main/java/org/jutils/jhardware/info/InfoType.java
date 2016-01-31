@@ -20,5 +20,6 @@ package org.jutils.jhardware.info;
  */
 public enum InfoType {
     PROCESSOR,
+    MEMORY,
     MOTHERBOARD;
 }

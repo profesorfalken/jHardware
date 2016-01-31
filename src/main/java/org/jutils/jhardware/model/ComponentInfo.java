@@ -11,15 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info;
+package org.jutils.jhardware.model;
 
-import org.jutils.jhardware.model.ComponentInfo;
+import java.io.Serializable;
 
 /**
- * Interface that represents a group of hardware information (cpu, memory, motherboard...)
- * 
+ *
  * @author Javier Garcia Alonso
  */
-public interface HardwareInfo {    
-    ComponentInfo getInfo();    
+public interface ComponentInfo extends Serializable {
+    
 }

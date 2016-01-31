@@ -5,11 +5,14 @@
  */
 package org.jutils.jhardware;
 
+import java.util.Map.Entry;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
 /**
@@ -41,13 +44,13 @@ public class HardwareInfoTest {
      * Test of getProcessorInfos method, of class HardwareInfo.
      */
     @org.junit.Test
-    public void testGetProcessorInfo() {       
+    public void testGetProcessorInfo() {               
         System.out.println("Testing getProcessorInfos...");
+        System.out.println("====================================");
         ProcessorInfo info = HardwareInfo.getProcessorInfo();
 
         assertTrue(info != null && info.getModelName() != null);
 
-        
         System.out.println("Cache size: " + info.getCacheSize());        
         System.out.println("Family: " + info.getFamily());
         System.out.println("Speed (Mhz): " + info.getMhz());
@@ -58,6 +61,38 @@ public class HardwareInfoTest {
         System.out.println("Temperature: " + info.getTemperature());
         System.out.println("Vendor Id: " + info.getVendorId());
         
+        Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
+        
+        for (final Entry<String, String> fullInfo : fullInfos) {
+            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
+        }
+        
+        System.out.println("End testing getProcessorInfos...");
+        System.out.println("====================================");
     }
 
+    /**
+     * Test of getMemoryInfos method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void testGetMemoryInfo() {               
+        System.out.println("Testing getMemoryInfos...");
+        System.out.println("====================================");
+        MemoryInfo info = HardwareInfo.getMemoryInfo();
+
+        assertTrue(info != null && info.getAvailableMemory() != null);
+        
+        System.out.println("Available Memory: " + info.getAvailableMemory());        
+        System.out.println("Free Memory: " + info.getFreeMemory());
+        System.out.println("Total Memory: " + info.getTotalMemory());
+        
+        Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
+        
+        for (final Entry<String, String> fullInfo : fullInfos) {
+            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
+        }
+        
+        System.out.println("End testing getMemoryInfos...");
+        System.out.println("====================================");
+    }
 }
