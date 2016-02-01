@@ -13,7 +13,9 @@
  */
 package org.jutils.jhardware.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,16 +28,39 @@ import java.util.stream.Stream;
  * @author Javier Garcia Alonso
  */
 public class HardwareInfoUtils {
-    public static Stream<String> readFile(String filePath){
+
+    private static final String CRLF = "\r\n";
+
+    public static Stream<String> readFile(String filePath) {
         Path path = Paths.get(filePath);
-         
+
         Stream<String> fileLines = null;
         try {
             fileLines = Files.lines(path);
         } catch (IOException ex) {
             Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
+
         return fileLines;
+    }
+
+    public static String executeCommand(String... command) {
+        StringBuilder commandOutput = new StringBuilder();
+
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader processOutput
+                    = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = processOutput.readLine()) != null) {
+                if (!line.isEmpty()) {
+                    commandOutput.append(line).append(CRLF);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return commandOutput.toString();
     }
 }
