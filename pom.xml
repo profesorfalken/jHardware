@@ -56,7 +56,7 @@
                 </configuration>
             </plugin>
                     
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.5</version>
@@ -69,7 +69,7 @@
                         </goals>                                      
                     </execution>                            
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
     
@@ -81,7 +81,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.profesorfalken</groupId>
+            <groupId>com.profesorfalken</groupId>
             <artifactId>WMI4Java</artifactId>
             <version>1.0</version>
         </dependency>

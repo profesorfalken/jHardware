@@ -13,37 +13,54 @@
  */
 package org.jutils.jhardware.info.bios.unix;
 
-import org.jutils.jhardware.info.memory.unix.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
+import org.jutils.jhardware.info.bios.AbstractBiosInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  * Information related to CPU
- * 
+ *
  * @author Javier Garcia Alonso
  */
-public final class UnixBiosInfo extends AbstractMemoryInfo {
-    private final static String MEMINFO = "/proc/meminfo";
-    
-    private String getMemoryData(){
-        String fullData = HardwareInfoUtils.executeCommand("");
-        
-        return "";
+public final class UnixBiosInfo extends AbstractBiosInfo {
+
+    private final static String DMIPATH = "/sys/devices/virtual/dmi/id/";
+
+    private String getMemoryData() {
+        String fullData = "";
+        if (HardwareInfoUtils.isSudo()) {
+            fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "0");
+        } else {
+            fullData += "\tRelease Data: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_date");
+            fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_vendor");
+            fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_version");
+        }
+
+        return fullData;
     }
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> processorDataMap = new HashMap<String, String>();
+        Map<String, String> biosDataMap = new HashMap<String, String>();
         String[] dataStringLines = getMemoryData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {
-            String[] dataStringInfo = dataLine.split(":");
-            processorDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
+            if (dataLine.startsWith("\t")) {
+                String[] dataStringInfo = dataLine.split(":");
+                if (dataStringInfo.length == 2) {
+                    biosDataMap.put(dataStringInfo[0].trim(), dataStringInfo[1].trim());
+                } else if (dataStringInfo.length == 1 && "\tCharacteristics".equals(dataStringInfo[0])) {
+                    String characteristics = "";
+                    for (final String characteristicsLine : dataStringLines) {
+                        if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
+                            characteristics += characteristicsLine.trim() + "\n";
+                        }
+                    }
+                    biosDataMap.put(dataStringInfo[0].trim(), characteristics);
+                }
+            }
         }
 
-        return processorDataMap;
-    }    
+        return biosDataMap;
+    }
 }

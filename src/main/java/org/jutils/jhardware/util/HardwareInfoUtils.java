@@ -49,8 +49,20 @@ public class HardwareInfoUtils {
 
         try {
             Process process = Runtime.getRuntime().exec(command);
-            BufferedReader processOutput
-                    = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try {
+                process.waitFor();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            BufferedReader processOutput;
+            
+            if (process.exitValue() == 0) {
+                processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            } else {
+                processOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            }
+            
             String line;
             while ((line = processOutput.readLine()) != null) {
                 if (!line.isEmpty()) {
@@ -60,7 +72,11 @@ public class HardwareInfoUtils {
         } catch (IOException ex) {
             Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return commandOutput.toString();
+    }
+
+    public static boolean isSudo() {
+        return !HardwareInfoUtils.executeCommand("sudo", "-n", "true").contains("a password is required");
     }
 }

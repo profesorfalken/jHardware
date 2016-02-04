@@ -13,6 +13,8 @@
  */
 package org.jutils.jhardware.info;
 
+import org.jutils.jhardware.info.bios.unix.UnixBiosInfo;
+import org.jutils.jhardware.info.bios.windows.WindowsBiosInfo;
 import org.jutils.jhardware.info.memory.unix.UnixMemoryInfo;
 import org.jutils.jhardware.info.memory.windows.WindowsMemoryInfo;
 import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
@@ -39,6 +41,12 @@ public class HardwareFactory {
                     return new WindowsMemoryInfo();
                 } else if (OSDetector.isUnix()) {
                     return new UnixMemoryInfo();
+                }
+            case BIOS:
+                if (OSDetector.isWindows()) {
+                    return new WindowsBiosInfo();
+                } else if (OSDetector.isUnix()) {
+                    return new UnixBiosInfo();
                 }
             case MOTHERBOARD:
                 return null;//new MotherboardInfo();

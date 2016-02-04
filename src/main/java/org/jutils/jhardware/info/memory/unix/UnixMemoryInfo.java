@@ -41,14 +41,14 @@ public final class UnixMemoryInfo extends AbstractMemoryInfo {
     }
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> processorDataMap = new HashMap<String, String>();
+        Map<String, String> memoryDataMap = new HashMap<String, String>();
         String[] dataStringLines = getMemoryData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split(":");
-            processorDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
+            memoryDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
         }
 
-        return processorDataMap;
+        return memoryDataMap;
     }    
 }

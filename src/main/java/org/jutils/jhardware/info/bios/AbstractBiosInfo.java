@@ -32,12 +32,13 @@ public abstract class AbstractBiosInfo implements HardwareInfo {
     
     protected BiosInfo buildFromDataMap(Map<String, String> dataMap) {
         BiosInfo info = new BiosInfo();
-        /*info.setFullInfo(dataMap);
+        info.setFullInfo(dataMap);
+        
         if (dataMap != null && !dataMap.isEmpty()) {
-            info.setAvailableMemory(dataMap.get("MemAvailable"));
-            info.setFreeMemory(dataMap.get("MemFree"));
-            info.setTotalMemory(dataMap.get("MemTotal"));
-        }*/
+            info.setDate(dataMap.get("Release Data"));
+            info.setManufacturer(dataMap.get("Vendor"));
+            info.setVersion(dataMap.get("Version"));
+        }
         
         return info;
     }

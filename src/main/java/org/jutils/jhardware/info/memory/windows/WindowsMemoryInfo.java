@@ -26,15 +26,15 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 public final class WindowsMemoryInfo extends AbstractMemoryInfo {
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> processorDataMap = 
+        Map<String, String> memoryDataMap = 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PERFFORMATTEDDATA_PERFOS_MEMORY);
-        processorDataMap.putAll(WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PHYSICALMEMORY));        
+        memoryDataMap.putAll(WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PHYSICALMEMORY));        
 
-        processorDataMap.put("MemAvailable", processorDataMap.get("AvailableKBytes"));
-        processorDataMap.put("MemFree", 
+        memoryDataMap.put("MemAvailable", memoryDataMap.get("AvailableKBytes"));
+        memoryDataMap.put("MemFree", 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
-        processorDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
+        memoryDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
 
-        return processorDataMap;
+        return memoryDataMap;
     }
 }

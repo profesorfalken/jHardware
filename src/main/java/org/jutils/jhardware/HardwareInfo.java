@@ -15,6 +15,7 @@ package org.jutils.jhardware;
 
 import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
+import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
@@ -45,5 +46,14 @@ public class HardwareInfo {
      */
     public static MemoryInfo getMemoryInfo() {
         return (MemoryInfo)HardwareFactory.get(InfoType.MEMORY).getInfo();
+    }
+    
+    /**
+     * Gets information related with BIOS
+     * 
+     * @return object with typed common data and a map with full data
+     */
+    public static BiosInfo getBiosInfo() {
+        return (BiosInfo)HardwareFactory.get(InfoType.BIOS).getInfo();
     }
 }
