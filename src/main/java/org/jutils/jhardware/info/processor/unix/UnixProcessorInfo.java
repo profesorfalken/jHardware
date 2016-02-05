@@ -27,6 +27,7 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixProcessorInfo extends AbstractProcessorInfo {    
     private final static String CPUINFO = "/proc/cpuinfo";
+    private final static String CPUTEMP = "/sys/class/thermal/thermal_zone2/temp";
 
     public String getProcessorData() {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);

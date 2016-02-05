@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
+import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
@@ -120,6 +121,31 @@ public class HardwareInfoTest {
         }
         
         System.out.println("End testing testGetBiosInfo...");
+        System.out.println("====================================");
+    }
+    
+    /**
+     * Test of getBiosInfo method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void testGetMotherboardInfo() {               
+        System.out.println("Testing testGetMotherboardInfo...");
+        System.out.println("====================================");
+        MotherboardInfo info = HardwareInfo.getMotherboardInfo();
+
+        assertTrue(info != null && info.getManufacturer() != null);
+        
+        System.out.println("Manufacturer: " + info.getManufacturer());        
+        System.out.println("Name : " + info.getName());
+        System.out.println("Version: " + info.getVersion());
+        
+        Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
+        
+        for (final Entry<String, String> fullInfo : fullInfos) {
+            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
+        }
+        
+        System.out.println("End testing testGetMotherboardInfo...");
         System.out.println("====================================");
     }
     

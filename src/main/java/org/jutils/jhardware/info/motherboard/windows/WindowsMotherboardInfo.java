@@ -11,19 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.bios.windows;
+package org.jutils.jhardware.info.motherboard.windows;
 
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
-import org.jutils.jhardware.info.bios.AbstractBiosInfo;
+import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
 
 /**
  * Information related to CPU
  * 
  * @author Javier Garcia Alonso
  */
-public final class WindowsBiosInfo extends AbstractBiosInfo {
+public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
 
     protected Map<String, String> parseInfo() {
         Map<String, String> processorDataMap = 
