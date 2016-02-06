@@ -35,7 +35,7 @@ public abstract class AbstractBiosInfo implements HardwareInfo {
         info.setFullInfo(dataMap);
         
         if (dataMap != null && !dataMap.isEmpty()) {
-            info.setDate(dataMap.get("Release Data"));
+            info.setDate(dataMap.get("Release Date"));
             info.setManufacturer(dataMap.get("Vendor"));
             info.setVersion(dataMap.get("Version"));
         }

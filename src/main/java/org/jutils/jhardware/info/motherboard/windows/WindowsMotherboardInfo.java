@@ -26,15 +26,13 @@ import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
 public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> processorDataMap = 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PERFFORMATTEDDATA_PERFOS_MEMORY);
-        processorDataMap.putAll(WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PHYSICALMEMORY));        
+        Map<String, String> motherboardDataMap = 
+                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_BASEBOARD);
 
-        processorDataMap.put("MemAvailable", processorDataMap.get("AvailableKBytes"));
-        processorDataMap.put("MemFree", 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
-        processorDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
+        motherboardDataMap.put("Product Name", motherboardDataMap.get("Name"));
+        motherboardDataMap.put("Manufacturer", motherboardDataMap.get("Manufacturer"));
+        motherboardDataMap.put("Version", motherboardDataMap.get("Version"));
 
-        return processorDataMap;
+        return motherboardDataMap;
     }
 }

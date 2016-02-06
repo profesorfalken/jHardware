@@ -32,7 +32,7 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
         if (HardwareInfoUtils.isSudo()) {
             fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "0");
         } else {
-            fullData += "\tRelease Data: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_date");
+            fullData += "\tRelease Date: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_date");
             fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_vendor");
             fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_version");
         }
