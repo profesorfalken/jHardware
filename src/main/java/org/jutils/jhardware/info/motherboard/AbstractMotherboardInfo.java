@@ -36,7 +36,7 @@ public abstract class AbstractMotherboardInfo implements HardwareInfo {
         
         if (dataMap != null && !dataMap.isEmpty()) {
             info.setName(dataMap.get("Product Name"));
-            info.setManufacturer(dataMap.get("Manufacturer"));
+            info.setManufacturer(dataMap.get("Vendor"));
             info.setVersion(dataMap.get("Version"));
         }
         

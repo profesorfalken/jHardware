@@ -30,7 +30,7 @@ public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_BASEBOARD);
 
         motherboardDataMap.put("Product Name", motherboardDataMap.get("Name"));
-        motherboardDataMap.put("Manufacturer", motherboardDataMap.get("Manufacturer"));
+        motherboardDataMap.put("Vendor", motherboardDataMap.get("Manufacturer"));
         motherboardDataMap.put("Version", motherboardDataMap.get("Version"));
 
         return motherboardDataMap;
