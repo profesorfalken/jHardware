@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jhardware</groupId>
     <artifactId>jHardware</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
     
     <name>jHardware</name>
@@ -56,7 +56,7 @@
                 </configuration>
             </plugin>
                     
-           <!-- <plugin>
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.5</version>
@@ -69,7 +69,7 @@
                         </goals>                                      
                     </execution>                            
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
     
