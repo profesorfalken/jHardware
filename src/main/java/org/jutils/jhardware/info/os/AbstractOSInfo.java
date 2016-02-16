@@ -11,34 +11,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.motherboard;
+package org.jutils.jhardware.info.os;
 
 import java.util.Map;
 import org.jutils.jhardware.info.HardwareInfo;
-import org.jutils.jhardware.model.MotherboardInfo;
+import org.jutils.jhardware.model.OSInfo;
 
 /**
  * Information related to BIOS
  * 
  * @author Javier Garcia Alonso
  */
-public abstract class AbstractMotherboardInfo implements HardwareInfo { 
+public abstract class AbstractOSInfo implements HardwareInfo { 
 
-    public MotherboardInfo getInfo() {
+    public OSInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }
     
     abstract protected Map<String, String> parseInfo();
     
-    protected MotherboardInfo buildFromDataMap(Map<String, String> dataMap) {
-        MotherboardInfo info = new MotherboardInfo();
+    protected OSInfo buildFromDataMap(Map<String, String> dataMap) {
+        OSInfo info = new OSInfo();
         info.setFullInfo(dataMap);
         
-        if (dataMap != null && !dataMap.isEmpty()) {
+        /*if (dataMap != null && !dataMap.isEmpty()) {
             info.setName(dataMap.get("Product Name"));
             info.setManufacturer(dataMap.get("Vendor"));
             info.setVersion(dataMap.get("Version"));
-        }
+        }*/
         
         return info;
     }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
+import org.jutils.jhardware.info.os.AbstractOSInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
@@ -25,7 +25,7 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  *
  * @author Javier Garcia Alonso
  */
-public final class UnixOsInfo extends AbstractMotherboardInfo {
+public final class UnixOSInfo extends AbstractOSInfo {
 
     private final static String OS_RELEASE = "/etc/os-release";
 
@@ -37,7 +37,7 @@ public final class UnixOsInfo extends AbstractMotherboardInfo {
         return fullData;
     }
 
-    private String getOSRunningTimeData() {
+    private String getOSStartTimeData() {
         String fullData = "";
 
         fullData += HardwareInfoUtils.executeCommand("last", "-x");
@@ -59,8 +59,35 @@ public final class UnixOsInfo extends AbstractMotherboardInfo {
     }
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> motherboardDataMap = new HashMap<String, String>();
+        Map<String, String> osDataMap = new HashMap<String, String>();
+        
+        String lsbRelease = getOSLsbReleaseData();
+        String[] dataStringLines = lsbRelease.split("\\r?\\n");
+
+        for (final String dataLine : dataStringLines) {
+            String[] dataStringInfo = dataLine.split(":");
+            osDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
+        }
+        
+        String osRelease = getOSReleaseData();
+        dataStringLines = osRelease.split("\\r?\\n");
+
+        for (final String dataLine : dataStringLines) {
+            String[] dataStringInfo = dataLine.split("=");
+            osDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim().replaceAll("\"", "") : "");
+        }
+        
+        String startTimeFullData = getOSStartTimeData();
+        dataStringLines = startTimeFullData.split("\\r?\\n");
+
+        for (final String dataLine : dataStringLines) {
+            if (dataLine.startsWith("reboot")) {
+                osDataMap.put("LastBootTime", dataLine.substring(39, 55));
+                break;
+            }
+        }
+        
       
-        return motherboardDataMap;
+        return osDataMap;
     }
 }

@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
+import org.jutils.jhardware.model.OSInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
@@ -46,7 +47,7 @@ public class HardwareInfoTest {
     /**
      * Test of getProcessorInfos method, of class HardwareInfo.
      */
-    @org.junit.Test
+    //@org.junit.Test
     public void testGetProcessorInfo() {               
         System.out.println("Testing getProcessorInfo...");
         System.out.println("====================================");
@@ -77,7 +78,7 @@ public class HardwareInfoTest {
     /**
      * Test of getMemoryInfos method, of class HardwareInfo.
      */
-    @org.junit.Test
+    //@org.junit.Test
     public void testGetMemoryInfo() {               
         System.out.println("Testing getMemoryInfo...");
         System.out.println("====================================");
@@ -102,7 +103,7 @@ public class HardwareInfoTest {
     /**
      * Test of getBiosInfo method, of class HardwareInfo.
      */
-    @org.junit.Test
+    //@org.junit.Test
     public void testGetBiosInfo() {               
         System.out.println("Testing testGetBiosInfo...");
         System.out.println("====================================");
@@ -127,7 +128,7 @@ public class HardwareInfoTest {
     /**
      * Test of getBiosInfo method, of class HardwareInfo.
      */
-    @org.junit.Test
+    //@org.junit.Test
     public void testGetMotherboardInfo() {               
         System.out.println("Testing testGetMotherboardInfo...");
         System.out.println("====================================");
@@ -159,6 +160,31 @@ public class HardwareInfoTest {
         System.out.println(HardwareInfoUtils.executeCommand("sudo", "-n", "true"));
         
         System.out.println("End testing testLaunchCommand...");
+        System.out.println("====================================");
+    }
+    
+    /**
+     * Test of getBiosInfo method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void testGetOSInfo() {               
+        System.out.println("Testing testGetOSInfo...");
+        System.out.println("====================================");
+        OSInfo info = HardwareInfo.getOSInfo();
+
+        /*assertTrue(info != null && info.getManufacturer() != null);
+        
+        System.out.println("Manufacturer: " + info.getManufacturer());        
+        System.out.println("Name : " + info.getName());
+        System.out.println("Version: " + info.getVersion());*/
+        
+        Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
+        
+        for (final Entry<String, String> fullInfo : fullInfos) {
+            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
+        }
+        
+        System.out.println("End testing testOSInfo...");
         System.out.println("====================================");
     }
 }

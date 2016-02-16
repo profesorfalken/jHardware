@@ -19,6 +19,8 @@ import org.jutils.jhardware.info.memory.unix.UnixMemoryInfo;
 import org.jutils.jhardware.info.memory.windows.WindowsMemoryInfo;
 import org.jutils.jhardware.info.motherboard.unix.UnixMotherboardInfo;
 import org.jutils.jhardware.info.motherboard.windows.WindowsMotherboardInfo;
+import org.jutils.jhardware.info.os.unix.UnixOSInfo;
+import org.jutils.jhardware.info.os.windows.WindowsOSInfo;
 import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
 import org.jutils.jhardware.info.processor.windows.WindowsProcessorInfo;
 import org.jutils.jhardware.util.OSDetector;
@@ -55,6 +57,12 @@ public class HardwareFactory {
                     return new WindowsMotherboardInfo();
                 } else if (OSDetector.isUnix()) {
                     return new UnixMotherboardInfo();
+                }
+            case OS:
+                if (OSDetector.isWindows()) {
+                    return new WindowsOSInfo();
+                } else if (OSDetector.isUnix()) {
+                    return new UnixOSInfo();
                 }
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);

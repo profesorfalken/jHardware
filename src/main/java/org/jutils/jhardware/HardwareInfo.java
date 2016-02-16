@@ -18,6 +18,7 @@ import org.jutils.jhardware.info.InfoType;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
+import org.jutils.jhardware.model.OSInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
 /**
@@ -65,5 +66,14 @@ public class HardwareInfo {
      */
     public static MotherboardInfo getMotherboardInfo() {
         return (MotherboardInfo)HardwareFactory.get(InfoType.MOTHERBOARD).getInfo();
+    }
+    
+    /**
+     * Gets information related with the Operating System
+     * 
+     * @return object with typed common data and a map with full data
+     */
+    public static OSInfo getOSInfo() {
+        return (OSInfo)HardwareFactory.get(InfoType.OS).getInfo();
     }
 }

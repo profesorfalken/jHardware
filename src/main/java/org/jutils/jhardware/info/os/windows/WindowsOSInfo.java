@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jutils.jhardware.info.motherboard.windows;
+package org.jutils.jhardware.info.os.windows;
 
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
@@ -23,7 +23,7 @@ import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
  * 
  * @author Javier Garcia Alonso
  */
-public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
+public final class WindowsOSInfo extends AbstractMotherboardInfo {
 
     protected Map<String, String> parseInfo() {
         Map<String, String> motherboardDataMap = 
