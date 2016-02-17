@@ -41,6 +41,13 @@ public final class WindowsProcessorInfo extends AbstractProcessorInfo {
         processorDataMap.put("cpu MHz", processorDataMap.get("MaxClockSpeed"));
         processorDataMap.put("vendor_id", processorDataMap.get("Manufacturer"));
         processorDataMap.put("cpu cores", processorDataMap.get("NumberOfCores"));
+        
+        Map<String, String> temperatureDataMap = 
+                WMI4Java.get().VBSEngine().namespace("root/wmi").getWMIObject("MSAcpi_ThermalZoneTemperature");
+        if (temperatureDataMap.containsKey("CurrentTemperature")) {
+            processorDataMap.put("Temperature", 
+                    String.valueOf(Integer.valueOf(processorDataMap.get("CurrentTemperature")) / 10 - 273));
+        }
 
         return processorDataMap;
     }
