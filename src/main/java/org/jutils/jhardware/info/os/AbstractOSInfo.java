@@ -34,11 +34,12 @@ public abstract class AbstractOSInfo implements HardwareInfo {
         OSInfo info = new OSInfo();
         info.setFullInfo(dataMap);
         
-        /*if (dataMap != null && !dataMap.isEmpty()) {
-            info.setName(dataMap.get("Product Name"));
-            info.setManufacturer(dataMap.get("Vendor"));
+        if (dataMap != null && !dataMap.isEmpty()) {
+            info.setName(dataMap.get("Name"));
+            info.setManufacturer(dataMap.get("Manufacturer"));
             info.setVersion(dataMap.get("Version"));
-        }*/
+            info.setLastBootTime("LastBootTime");
+        }
         
         return info;
     }

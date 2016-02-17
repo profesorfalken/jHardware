@@ -20,10 +20,45 @@ import java.util.Map;
  * @author Javier Garcia Alonso
  */
 public class OSInfo implements ComponentInfo {
-   
-   
+    private String version;
+    private String lastBootTime;
+    private String name;
+    private String manufacturer;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getLastBootTime() {
+        return lastBootTime;
+    }
+
+    public void setLastBootTime(String lastBootTime) {
+        this.lastBootTime = lastBootTime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
     private Map<String, String> fullInfo;
 
+    
     
     public Map<String, String> getFullInfo() {
         return fullInfo;

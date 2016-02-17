@@ -16,23 +16,24 @@ package org.jutils.jhardware.info.os.windows;
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
-import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
+import org.jutils.jhardware.info.os.AbstractOSInfo;
 
 /**
  * Information related to CPU
  * 
  * @author Javier Garcia Alonso
  */
-public final class WindowsOSInfo extends AbstractMotherboardInfo {
+public final class WindowsOSInfo extends AbstractOSInfo {
 
     protected Map<String, String> parseInfo() {
-        Map<String, String> motherboardDataMap = 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_BASEBOARD);
+        Map<String, String> osDataMap = 
+                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM);
 
-        motherboardDataMap.put("Product Name", motherboardDataMap.get("Name"));
-        motherboardDataMap.put("Vendor", motherboardDataMap.get("Manufacturer"));
-        motherboardDataMap.put("Version", motherboardDataMap.get("Version"));
+        osDataMap.put("Version", osDataMap.get("Version"));
+        osDataMap.put("LastBootTime", osDataMap.get("LastBootUpTime"));
+        osDataMap.put("Name", osDataMap.get("Caption"));
+        osDataMap.put("Manufacturer", osDataMap.get("Manufacturer"));
 
-        return motherboardDataMap;
+        return osDataMap;
     }
 }

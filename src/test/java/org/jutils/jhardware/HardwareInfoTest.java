@@ -154,29 +154,17 @@ public class HardwareInfoTest {
      * Test of getBiosInfo method, of class HardwareInfo.
      */
     @org.junit.Test
-    public void testLaunchCommand() {               
-        System.out.println("Testing testLaunchCommand...");
-        System.out.println("====================================");
-        System.out.println(HardwareInfoUtils.executeCommand("sudo", "-n", "true"));
-        
-        System.out.println("End testing testLaunchCommand...");
-        System.out.println("====================================");
-    }
-    
-    /**
-     * Test of getBiosInfo method, of class HardwareInfo.
-     */
-    @org.junit.Test
     public void testGetOSInfo() {               
         System.out.println("Testing testGetOSInfo...");
         System.out.println("====================================");
         OSInfo info = HardwareInfo.getOSInfo();
 
-        /*assertTrue(info != null && info.getManufacturer() != null);
+        assertTrue(info != null && info.getManufacturer() != null);
         
         System.out.println("Manufacturer: " + info.getManufacturer());        
-        System.out.println("Name : " + info.getName());
-        System.out.println("Version: " + info.getVersion());*/
+        System.out.println("Name: " + info.getName());
+        System.out.println("Version: " + info.getVersion());
+        System.out.println("Last boot time: " + info.getLastBootTime());
         
         Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
         
