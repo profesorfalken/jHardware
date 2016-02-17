@@ -39,21 +39,13 @@ public final class WindowsOSInfo extends AbstractOSInfo {
     }
 
     private String parseBootUpTime(String rawBootUpTime) {
-        String test = "20160217083430.500000+060";
-        String year = test.substring(0, 4);
-        String month = test.substring(4, 6);
-        String day = test.substring(6, 8);
-        String hour = test.substring(8, 10);
-        String minute = test.substring(10, 12);
-        String seconds = test.substring(12, 14);
-
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, Integer.valueOf(year));
-        c.set(Calendar.MONTH, Integer.valueOf(month));
-        c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(day));
-        c.set(Calendar.HOUR, Integer.valueOf(hour));
-        c.set(Calendar.MINUTE, Integer.valueOf(minute));
-        c.set(Calendar.SECOND, Integer.valueOf(seconds));
+        c.set(Calendar.YEAR, Integer.valueOf(rawBootUpTime.substring(0, 4)));
+        c.set(Calendar.MONTH, Integer.valueOf(rawBootUpTime.substring(4, 6)));
+        c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(rawBootUpTime.substring(6, 8)));
+        c.set(Calendar.HOUR, Integer.valueOf(rawBootUpTime.substring(8, 10)));
+        c.set(Calendar.MINUTE, Integer.valueOf(rawBootUpTime.substring(10, 12)));
+        c.set(Calendar.SECOND, Integer.valueOf(rawBootUpTime.substring(12, 14)));
         
         return c.getTime().toString();
     }
