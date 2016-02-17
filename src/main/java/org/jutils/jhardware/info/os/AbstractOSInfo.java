@@ -38,7 +38,7 @@ public abstract class AbstractOSInfo implements HardwareInfo {
             info.setName(dataMap.get("Name"));
             info.setManufacturer(dataMap.get("Manufacturer"));
             info.setVersion(dataMap.get("Version"));
-            info.setLastBootTime("LastBootTime");
+            info.setLastBootTime(dataMap.get("LastBootTime"));
         }
         
         return info;
