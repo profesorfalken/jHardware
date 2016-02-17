@@ -74,7 +74,8 @@ public final class UnixOSInfo extends AbstractOSInfo {
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split("=");
-            osDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim().replaceAll("\"", "") : "");
+            osDataMap.put(HardwareInfoUtils.toCamelCase("OS_" + dataStringInfo[0].trim()), 
+                    (dataStringInfo.length == 2) ? dataStringInfo[1].trim().replaceAll("\"", "") : "");
         }
         
         String startTimeFullData = getOSStartTimeData();
@@ -86,7 +87,6 @@ public final class UnixOSInfo extends AbstractOSInfo {
                 break;
             }
         }
-        
       
         return osDataMap;
     }

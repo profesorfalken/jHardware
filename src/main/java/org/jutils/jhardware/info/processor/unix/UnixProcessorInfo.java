@@ -13,6 +13,7 @@
  */
 package org.jutils.jhardware.info.processor.unix;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -22,22 +23,37 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  * Information related to CPU
- * 
+ *
  * @author Javier Garcia Alonso
  */
-public final class UnixProcessorInfo extends AbstractProcessorInfo {    
+public final class UnixProcessorInfo extends AbstractProcessorInfo {
+
     private final static String CPUINFO = "/proc/cpuinfo";
     private final static String CPUTEMP = "/sys/class/thermal/thermal_zone2/temp";
 
     public String getProcessorData() {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
         final StringBuilder buffer = new StringBuilder();
-        
+
         streamProcessorInfo.forEach(new Consumer<String>() {
             public void accept(String line) {
-                buffer.append(line).append("\r\n");                
+                buffer.append(line).append("\r\n");
             }
         });
+        return buffer.toString();
+    }
+
+    public String getTemperatureData() {
+        final StringBuilder buffer = new StringBuilder();
+        if (new File(CPUTEMP).exists()) {
+            Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUTEMP);
+
+            streamProcessorInfo.forEach(new Consumer<String>() {
+                public void accept(String line) {
+                    buffer.append(line).append("\r\n");
+                }
+            });
+        }
         return buffer.toString();
     }
 
@@ -47,9 +63,17 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split(":");
-            processorDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
+            processorDataMap.put(dataStringInfo[0].trim(), 
+                        (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
+        }
+
+        String temperature = getTemperatureData();
+        if (temperature != null && !temperature.isEmpty()) {
+            processorDataMap.put("Temperature", String.valueOf(Integer.valueOf(temperature) / 2) + "C");
+        } else {
+            processorDataMap.put("Temperature", "NOT DETECTED");
         }
 
         return processorDataMap;
-    }    
+    }
 }

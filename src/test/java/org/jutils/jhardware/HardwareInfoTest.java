@@ -47,7 +47,7 @@ public class HardwareInfoTest {
     /**
      * Test of getProcessorInfos method, of class HardwareInfo.
      */
-    //@org.junit.Test
+    @org.junit.Test
     public void testGetProcessorInfo() {               
         System.out.println("Testing getProcessorInfo...");
         System.out.println("====================================");
@@ -78,7 +78,7 @@ public class HardwareInfoTest {
     /**
      * Test of getMemoryInfos method, of class HardwareInfo.
      */
-    //@org.junit.Test
+    @org.junit.Test
     public void testGetMemoryInfo() {               
         System.out.println("Testing getMemoryInfo...");
         System.out.println("====================================");
@@ -103,7 +103,7 @@ public class HardwareInfoTest {
     /**
      * Test of getBiosInfo method, of class HardwareInfo.
      */
-    //@org.junit.Test
+    @org.junit.Test
     public void testGetBiosInfo() {               
         System.out.println("Testing testGetBiosInfo...");
         System.out.println("====================================");
@@ -128,7 +128,7 @@ public class HardwareInfoTest {
     /**
      * Test of getBiosInfo method, of class HardwareInfo.
      */
-    //@org.junit.Test
+    @org.junit.Test
     public void testGetMotherboardInfo() {               
         System.out.println("Testing testGetMotherboardInfo...");
         System.out.println("====================================");
@@ -153,7 +153,7 @@ public class HardwareInfoTest {
     /**
      * Test of getBiosInfo method, of class HardwareInfo.
      */
-    //@org.junit.Test
+    @org.junit.Test
     public void testLaunchCommand() {               
         System.out.println("Testing testLaunchCommand...");
         System.out.println("====================================");
