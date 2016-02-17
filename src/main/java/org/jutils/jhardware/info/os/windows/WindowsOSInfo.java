@@ -31,14 +31,14 @@ public final class WindowsOSInfo extends AbstractOSInfo {
                 = WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM);
 
         osDataMap.put("Version", osDataMap.get("Version"));
-        osDataMap.put("LastBootTime", parseBootUpTime(osDataMap.get("LastBootUpTime")));
+        osDataMap.put("LastBootTime", normalizeBootUpDate(osDataMap.get("LastBootUpTime")));
         osDataMap.put("Name", osDataMap.get("Caption"));
         osDataMap.put("Manufacturer", osDataMap.get("Manufacturer"));
 
         return osDataMap;
     }
 
-    private String parseBootUpTime(String rawBootUpTime) {
+    private String normalizeBootUpDate(String rawBootUpTime) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, Integer.valueOf(rawBootUpTime.substring(0, 4)));
         c.set(Calendar.MONTH, Integer.valueOf(rawBootUpTime.substring(4, 6)));

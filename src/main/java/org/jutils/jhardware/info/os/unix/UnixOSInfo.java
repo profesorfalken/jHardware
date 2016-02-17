@@ -13,7 +13,13 @@
  */
 package org.jutils.jhardware.info.os.unix;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -83,11 +89,28 @@ public final class UnixOSInfo extends AbstractOSInfo {
 
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("reboot")) {
-                osDataMap.put("LastBootTime", dataLine.substring(39, 55));
+                osDataMap.put("LastBootTime", normalizeBootUpDate(dataLine.substring(39, 55)));
                 break;
             }
         }
+        
+        //Set named data
+        osDataMap.put("Manufacturer", osDataMap.get("Distributor ID"));
+        osDataMap.put("Name", osDataMap.get("Description"));
+        osDataMap.put("Version", osDataMap.get("Release"));
       
         return osDataMap;
+    }
+    
+    private String normalizeBootUpDate(String rawBootUpdate) {
+         DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm yyyy", Locale.ENGLISH);
+         Date returnedDate;
+         try{
+             returnedDate = df.parse(rawBootUpdate + " " + Calendar.getInstance().get(Calendar.YEAR));
+         } catch(ParseException pe) {
+             return rawBootUpdate;
+         }
+         
+         return returnedDate.toString();
     }
 }

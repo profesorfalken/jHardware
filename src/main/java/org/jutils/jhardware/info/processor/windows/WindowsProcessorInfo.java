@@ -47,6 +47,9 @@ public final class WindowsProcessorInfo extends AbstractProcessorInfo {
         if (temperatureDataMap.containsKey("CurrentTemperature")) {
             processorDataMap.put("Temperature", 
                     String.valueOf(Integer.valueOf(processorDataMap.get("CurrentTemperature")) / 10 - 273));
+        } else {
+            processorDataMap.put("Temperature", 
+                    "NOT DETECTED");
         }
 
         return processorDataMap;
