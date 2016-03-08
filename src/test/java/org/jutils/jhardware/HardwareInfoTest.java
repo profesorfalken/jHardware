@@ -15,9 +15,9 @@ import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
+import org.jutils.jhardware.model.NetworkInfo;
 import org.jutils.jhardware.model.OSInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
-import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  *
@@ -173,6 +173,20 @@ public class HardwareInfoTest {
         }
         
         System.out.println("End testing testOSInfo...");
+        System.out.println("====================================");
+    }
+    
+    /**
+     * Test of getNetworkInfo method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void getNetworkInfo() {               
+        System.out.println("Testing getNetworkInfo...");
+        System.out.println("====================================");
+        NetworkInfo info = HardwareInfo.getNetworkInfo();
+
+        
+        System.out.println("End testing getNetworkInfo...");
         System.out.println("====================================");
     }
 }

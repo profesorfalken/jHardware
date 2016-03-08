@@ -33,6 +33,12 @@ import org.jutils.jhardware.util.OSDetector;
  * @author Javier Garcia Alonso
  */
 public class HardwareFactory {
+    
+    /**
+     * Hide constructor
+     */
+    private HardwareFactory() {
+    }
 
     public static HardwareInfo get(InfoType type) {
         switch (type) {

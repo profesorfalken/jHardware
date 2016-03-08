@@ -34,6 +34,12 @@ import org.jutils.jhardware.model.ProcessorInfo;
 public class HardwareInfo {
     
     /**
+     * Hide constructor
+     */
+    private HardwareInfo() {
+    }
+    
+    /**
      * Gets information related with CPU
      * 
      * @return object with typed common data and a map with full data

@@ -16,37 +16,34 @@ package org.jutils.jhardware.info.network.windows;
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
-import org.jutils.jhardware.info.os.AbstractOSInfo;
+import org.jutils.jhardware.info.network.AbstractNetworkInfo;
+import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
  * Information related to CPU
  *
  * @author Javier Garcia Alonso
  */
-public final class WindowsNetworkInfo extends AbstractOSInfo {
+public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
-    protected Map<String, String> parseInfo() {
-        Map<String, String> osDataMap
-                = WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM);
+    private String getNetworkData() {
+        String networkData = HardwareInfoUtils.executeCommand("netstat", "-a");
 
-        osDataMap.put("Version", osDataMap.get("Version"));
-        osDataMap.put("LastBootTime", normalizeBootUpDate(osDataMap.get("LastBootUpTime")));
-        osDataMap.put("Name", osDataMap.get("Caption"));
-        osDataMap.put("Manufacturer", osDataMap.get("Manufacturer"));
-
-        return osDataMap;
+        return networkData;
     }
 
-    private String normalizeBootUpDate(String rawBootUpTime) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, Integer.valueOf(rawBootUpTime.substring(0, 4)));
-        c.set(Calendar.MONTH, Integer.valueOf(rawBootUpTime.substring(4, 6)));
-        c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(rawBootUpTime.substring(6, 8)));
-        c.set(Calendar.HOUR, Integer.valueOf(rawBootUpTime.substring(8, 10)));
-        c.set(Calendar.MINUTE, Integer.valueOf(rawBootUpTime.substring(10, 12)));
-        c.set(Calendar.SECOND, Integer.valueOf(rawBootUpTime.substring(12, 14)));
-        
-        return c.getTime().toString();
+    protected Map<String, String> parseInfo() {
+        Map<String, String> networkDataMap = new HashMap<String, String>();
+
+        String lsbRelease = getNetworkData();
+        String[] dataStringLines = lsbRelease.split("\\r?\\n");
+
+        for (final String dataLine : dataStringLines) {
+
+        }
+
+        return networkDataMap;
     }
 }

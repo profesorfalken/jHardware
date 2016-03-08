@@ -15,10 +15,12 @@
  */
 package org.jutils.jhardware.model;
 
+import java.util.List;
+
 /**
  *
  * @author javier
  */
 public class NetworkInfo implements ComponentInfo {
-    
+    private List<NetworkInterfaceInfo> networkInterfaces;
 }

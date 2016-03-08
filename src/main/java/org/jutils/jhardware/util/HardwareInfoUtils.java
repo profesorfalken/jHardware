@@ -46,6 +46,7 @@ public class HardwareInfoUtils {
 
     public static String executeCommand(String... command) {
         StringBuilder commandOutput = new StringBuilder();
+        BufferedReader processOutput = null;
 
         try {
             Process process = Runtime.getRuntime().exec(command);
@@ -53,9 +54,7 @@ public class HardwareInfoUtils {
                 process.waitFor();
             } catch (InterruptedException ex) {
                 Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            BufferedReader processOutput;
+            }            
 
             if (process.exitValue() == 0) {
                 processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -71,6 +70,14 @@ public class HardwareInfoUtils {
             }
         } catch (IOException ex) {
             Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (processOutput != null) {
+                try {
+                    processOutput.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         return commandOutput.toString();
