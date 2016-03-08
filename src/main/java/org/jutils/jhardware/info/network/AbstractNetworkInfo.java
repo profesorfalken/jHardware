@@ -13,9 +13,12 @@
  */
 package org.jutils.jhardware.info.network;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.jutils.jhardware.info.HardwareInfo;
 import org.jutils.jhardware.model.NetworkInfo;
+import org.jutils.jhardware.model.NetworkInterfaceInfo;
 
 /**
  * Information related to BIOS
@@ -32,14 +35,23 @@ public abstract class AbstractNetworkInfo implements HardwareInfo {
     
     protected NetworkInfo buildFromDataMap(Map<String, String> dataMap) {
         NetworkInfo info = new NetworkInfo();
-        /*info.setFullInfo(dataMap);
         
-        if (dataMap != null && !dataMap.isEmpty()) {
-            info.setName(dataMap.get("Name"));
-            info.setManufacturer(dataMap.get("Manufacturer"));
-            info.setVersion(dataMap.get("Version"));
-            info.setLastBootTime(dataMap.get("LastBootTime"));
-        }*/
+        List<NetworkInterfaceInfo> interfacesList = new ArrayList<NetworkInterfaceInfo>();
+        int interfacesLength = Integer.valueOf(dataMap.get("interfacesLength"));
+        for (int i = 1; i<=interfacesLength; i++) {
+            NetworkInterfaceInfo interfaceInfo = new NetworkInterfaceInfo();
+            interfaceInfo.setName(dataMap.get("interface_" + i));
+            interfaceInfo.setType(dataMap.get("type_" + i));
+            interfaceInfo.setIpv4(dataMap.get("ipv4_" + i));
+            interfaceInfo.setIpv6(dataMap.get("ipv6_" + i));
+            interfaceInfo.setReceivedPackets(dataMap.get("received_packets_" + i));
+            interfaceInfo.setTransmittedPackets(dataMap.get("transmitted_packets_" + i));
+            interfaceInfo.setReceivedBytes(dataMap.get("received_bytes_" + i));
+            interfaceInfo.setTransmittedBytes(dataMap.get("transmitted_bytes_" + i));
+            interfacesList.add(interfaceInfo);
+        }
+        
+        info.setNetworkInterfaces(interfacesList);
         
         return info;
     }

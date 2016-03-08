@@ -63,6 +63,7 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
                 }
             }
         }
+        networkDataMap.put("interfacesLength", String.valueOf(count));
 
         return networkDataMap;
     }

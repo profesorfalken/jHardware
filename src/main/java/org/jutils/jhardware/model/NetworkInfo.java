@@ -23,4 +23,13 @@ import java.util.List;
  */
 public class NetworkInfo implements ComponentInfo {
     private List<NetworkInterfaceInfo> networkInterfaces;
+
+    public List<NetworkInterfaceInfo> getNetworkInterfaces() {
+        return networkInterfaces;
+    }
+
+    public void setNetworkInterfaces(List<NetworkInterfaceInfo> networkInterfaces) {
+        this.networkInterfaces = networkInterfaces;
+    }
+    
 }
