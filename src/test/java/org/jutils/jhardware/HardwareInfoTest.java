@@ -5,6 +5,7 @@
  */
 package org.jutils.jhardware;
 
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.junit.After;
@@ -16,6 +17,7 @@ import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.NetworkInfo;
+import org.jutils.jhardware.model.NetworkInterfaceInfo;
 import org.jutils.jhardware.model.OSInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
@@ -184,7 +186,21 @@ public class HardwareInfoTest {
         System.out.println("Testing getNetworkInfo...");
         System.out.println("====================================");
         NetworkInfo info = HardwareInfo.getNetworkInfo();
+        
+        assertTrue(info != null && info.getNetworkInterfaces() != null && !info.getNetworkInterfaces().isEmpty());
 
+        List<NetworkInterfaceInfo> networkInterfaces = info.getNetworkInterfaces();
+        
+        for (final NetworkInterfaceInfo interfaceInfo : networkInterfaces) {
+            System.out.println("----------Interface: " + interfaceInfo.getName() + "---------");
+            System.out.println("Ipv4: " + interfaceInfo.getIpv4());
+            System.out.println("Ipv6: " + interfaceInfo.getIpv6());
+            System.out.println("Received Packets: " + interfaceInfo.getReceivedPackets());
+            System.out.println("Transmitted Packets: " + interfaceInfo.getTransmittedPackets());
+            System.out.println("Received Bytes: " + interfaceInfo.getReceivedBytes());
+            System.out.println("Transmited Bytes: " + interfaceInfo.getTransmittedBytes());
+            System.out.println("------------------------------------------------------");
+        }
         
         System.out.println("End testing getNetworkInfo...");
         System.out.println("====================================");
