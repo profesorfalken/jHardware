@@ -13,9 +13,6 @@
  */
 package org.jutils.jhardware.info.network.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
-import com.profesorfalken.wmi4java.WMIClass;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import org.jutils.jhardware.info.network.AbstractNetworkInfo;
@@ -29,7 +26,7 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
 public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
     private String getNetworkData() {
-        String networkData = HardwareInfoUtils.executeCommand("netstat", "-a");
+        String networkData = HardwareInfoUtils.executeCommand("ipconfig", "/all");
 
         return networkData;
     }
@@ -40,9 +37,27 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         String lsbRelease = getNetworkData();
         String[] dataStringLines = lsbRelease.split("\\r?\\n");
 
+        boolean reading = false;
+        int count = 0;
         for (final String dataLine : dataStringLines) {
+            if (!dataLine.startsWith(" ")) {
+                reading = false;
+                if (!dataLine.contains("Windows IP Configuration")) {
+                    count++;
+                    reading = true;
+                    networkDataMap.put("interface_" + count, dataLine);
+                }
+                continue;
+            }
 
+            if (reading) {
+                if (dataLine.contains("IP Address")) {
+                    networkDataMap.put("ipv4_" + count, dataLine.split(":")[1]);
+                }
+            }
         }
+
+        networkDataMap.put("interfacesLength", String.valueOf(count));
 
         return networkDataMap;
     }
