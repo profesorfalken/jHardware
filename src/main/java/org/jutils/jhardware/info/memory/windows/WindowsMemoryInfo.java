@@ -19,7 +19,7 @@ import java.util.Map;
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 
 /**
- * Information related to CPU
+ * Information related to Memory
  * 
  * @author Javier Garcia Alonso
  */

@@ -13,16 +13,13 @@
  */
 package org.jutils.jhardware.info.network.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
-import com.profesorfalken.wmi4java.WMIClass;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import org.jutils.jhardware.info.network.AbstractNetworkInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to CPU
+ * Information related to Network
  *
  * @author Javier Garcia Alonso
  */

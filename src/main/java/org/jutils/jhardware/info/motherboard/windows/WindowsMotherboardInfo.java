@@ -19,7 +19,7 @@ import java.util.Map;
 import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
 
 /**
- * Information related to CPU
+ * Information related to Motherboard
  * 
  * @author Javier Garcia Alonso
  */

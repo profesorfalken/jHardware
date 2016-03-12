@@ -19,7 +19,7 @@ import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to CPU
+ * Information related to Motherboard
  *
  * @author Javier Garcia Alonso
  */

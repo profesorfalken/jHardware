@@ -21,7 +21,7 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to CPU
+ * Information related to Memory
  * 
  * @author Javier Garcia Alonso
  */

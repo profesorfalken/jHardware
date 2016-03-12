@@ -18,7 +18,7 @@ import org.jutils.jhardware.info.HardwareInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 
 /**
- * Information related to BIOS
+ * Information related to Motherboard
  * 
  * @author Javier Garcia Alonso
  */

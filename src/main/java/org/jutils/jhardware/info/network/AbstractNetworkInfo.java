@@ -21,7 +21,7 @@ import org.jutils.jhardware.model.NetworkInfo;
 import org.jutils.jhardware.model.NetworkInterfaceInfo;
 
 /**
- * Information related to BIOS
+ * Information related to Network
  * 
  * @author Javier Garcia Alonso
  */

@@ -19,7 +19,7 @@ import java.util.Map;
 import org.jutils.jhardware.info.bios.AbstractBiosInfo;
 
 /**
- * Information related to CPU
+ * Information related to BIOS
  * 
  * @author Javier Garcia Alonso
  */

@@ -19,7 +19,7 @@ import org.jutils.jhardware.info.bios.AbstractBiosInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to CPU
+ * Information related to BIOS
  *
  * @author Javier Garcia Alonso
  */
