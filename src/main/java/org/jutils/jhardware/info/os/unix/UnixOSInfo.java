@@ -27,7 +27,7 @@ import org.jutils.jhardware.info.os.AbstractOSInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to CPU
+ * Information related to Operating System
  *
  * @author Javier Garcia Alonso
  */

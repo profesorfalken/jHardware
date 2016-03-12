@@ -20,7 +20,7 @@ import java.util.Map;
 import org.jutils.jhardware.info.os.AbstractOSInfo;
 
 /**
- * Information related to CPU
+ * Information related to Operating System
  *
  * @author Javier Garcia Alonso
  */
