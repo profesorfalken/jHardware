@@ -6,19 +6,19 @@ Get crossplatform hardware details with Java
 
 ## Installation ##
 
-To install jHardware you can add the dependecy to your software project management tool: http://mvnrepository.com/artifact/org.jhardware/jHardware/0.2
+To install jHardware you can add the dependecy to your software project management tool: http://mvnrepository.com/artifact/org.jhardware/jHardware/0.4
 
 For example, for Maven you have just to add to your pom.xml: 
 
      <dependency>
           <groupId>org.jhardware</groupId>
           <artifactId>jHardware</artifactId>
-          <version>0.3</version>
+          <version>0.4</version>
      </dependency>
 
 
 Instead, you can direct download the JAR file and add it to your classpath. 
-http://central.maven.org/maven2/org/jhardware/jHardware/0.3/jHardware-0.3.jar
+http://central.maven.org/maven2/org/jhardware/jHardware/0.4/jHardware-0.4.jar
 
 ## Basic Usage ##
 
