@@ -193,7 +193,7 @@ public class HardwareInfoTest {
             System.out.println("Received Packets: " + interfaceInfo.getReceivedPackets());
             System.out.println("Transmitted Packets: " + interfaceInfo.getTransmittedPackets());
             System.out.println("Received Bytes: " + interfaceInfo.getReceivedBytes());
-            System.out.println("Transmited Bytes: " + interfaceInfo.getTransmittedBytes());
+            System.out.println("Transmitted Bytes: " + interfaceInfo.getTransmittedBytes());
             System.out.println("------------------------------------------------------");
         }
         

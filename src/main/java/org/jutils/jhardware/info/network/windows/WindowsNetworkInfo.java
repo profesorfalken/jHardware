@@ -26,20 +26,71 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
 public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
     private String getNetworkData() {
-        String networkData = HardwareInfoUtils.executeCommand("netstat", "-a");
-
-        return networkData;
+        return HardwareInfoUtils.executeCommand("ipconfig", "/all");
+    }
+    
+    private String getNetstatData() {
+        return HardwareInfoUtils.executeCommand("netstat", "-e");
     }
 
     protected Map<String, String> parseInfo() {
         Map<String, String> networkDataMap = new HashMap<String, String>();
-
-        String lsbRelease = getNetworkData();
-        String[] dataStringLines = lsbRelease.split("\\r?\\n");
-
+        
+        String receivedBytes = null;
+        String transmittedBytes = null;
+        String receivedPackets = null;
+        String transmittedPackets = null;
+        String netstatData = getNetstatData();
+        String[] dataStringLines = netstatData.split("\\r?\\n");
         for (final String dataLine : dataStringLines) {
-
+            if (dataLine.startsWith("Bytes")) {
+                String[] infos = dataLine.split("\\s+");
+                receivedBytes = infos[1];
+                transmittedBytes = infos[2];
+            } else if (dataLine.startsWith("Unicast packets")) {
+                String[] infos = dataLine.split("\\s+");
+                receivedPackets = infos[2];
+                transmittedPackets = infos[3];
+            }
         }
+
+        String networkData = getNetworkData();
+        dataStringLines = networkData.split("\\r?\\n");
+
+        boolean reading = false;
+        int count = 0;
+        for (final String dataLine : dataStringLines) {
+            if (!dataLine.startsWith(" ")) {
+                reading = false;
+                if (!dataLine.contains("Windows IP Configuration")) {
+                    count++;
+                    reading = true;
+                    networkDataMap.put("interface_" + count, dataLine);
+                }
+                continue;
+            }
+
+            if (reading) {
+                if (dataLine.contains("IP Address")) {
+                    networkDataMap.put("ipv4_" + count, dataLine.split(":")[1]);
+                }
+                
+                if (dataLine.contains("Link-local IPv6 Address")) {
+                    networkDataMap.put("ipv6_" + count, dataLine.split(":")[1]);
+                }
+                
+                if (dataLine.contains("Default Gateway")) {
+                    if (!dataLine.split(":")[1].isEmpty()) {
+                        networkDataMap.put("received_packets_" + count, receivedPackets);
+                        networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
+                        networkDataMap.put("received_bytes_" + count, receivedBytes);
+                        networkDataMap.put("transmitted_bytes_" + count, transmittedBytes);
+                    }
+                }
+            }
+        }
+
+        networkDataMap.put("interfacesLength", String.valueOf(count));
 
         return networkDataMap;
     }
