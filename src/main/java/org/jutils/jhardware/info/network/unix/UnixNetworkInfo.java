@@ -29,7 +29,7 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
 
     private String getNetworkData() {
         String networkData = HardwareInfoUtils.executeCommand("ifconfig", "-a");
-        
+
         System.out.println("RAW Network data: " + networkData);
 
         return networkData;
@@ -44,9 +44,9 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         int count = 0;
         for (final String dataLine : dataStringLines) {
             if (!dataLine.startsWith(" ")) {
-                    count++;
-                    networkDataMap.put("interface_" + count, extractUntilSpace(dataLine));
-                    networkDataMap.put("type_" + count, extractText(dataLine, "Link encap:", "  "));                   
+                count++;
+                networkDataMap.put("interface_" + count, extractUntilSpace(dataLine));
+                networkDataMap.put("type_" + count, extractText(dataLine, "Link encap:", "  "));
             } else {
                 String lineType = extractUntilSpace(dataLine);
                 if ("inet".equals(lineType)) {
@@ -69,18 +69,27 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
 
         return networkDataMap;
     }
-    
+
     private String extractText(String text, String startTag, String endTag) {
+        if (text.trim().isEmpty()) {
+            return "NOT FOUND";
+        }
+        
         final Pattern pattern = Pattern.compile(startTag + "(.+?)" + endTag);
         final Matcher matcher = pattern.matcher(text);
+        
         matcher.find();
-         if (matcher.groupCount() > 0) {
+        if (matcher.groupCount() > 0) {
             return matcher.group(1);
         }
         return "NOT FOUND";
     }
-    
-    private String extractUntilSpace(String text) {        
+
+    private String extractUntilSpace(String text) {
+        if (text.trim().isEmpty()) {
+            return "NOT FOUND";
+        }
+        
         final Pattern pattern = Pattern.compile("([^\\s]+)");
         final Matcher matcher = pattern.matcher(text);
         matcher.find();

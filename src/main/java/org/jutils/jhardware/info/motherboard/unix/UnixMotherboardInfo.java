@@ -36,6 +36,8 @@ public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
             fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "board_vendor");
             fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "board_version");
         }
+        
+        System.out.println("RAW Motherboard data: " + fullData);
 
         return fullData;
     }
