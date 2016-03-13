@@ -36,6 +36,8 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
             fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_vendor");
             fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_version");
         }
+        
+        System.out.println("RAW BIOS data: " + fullData);
 
         return fullData;
     }
