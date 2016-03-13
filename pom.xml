@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jhardware</groupId>
     <artifactId>jHardware</artifactId>
-    <version>0.5</version>
+    <version>0.6</version>
     <packaging>jar</packaging>
     
     <name>jHardware</name>
@@ -115,8 +115,8 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <it.jacoco.destFile>${java.io.tmpdir}/jacoco-foo.dump</it.jacoco.destFile>
         <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
     </properties>
