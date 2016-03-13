@@ -35,9 +35,9 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
         final StringBuilder buffer = new StringBuilder();
 
-        streamProcessorInfo.forEach((String line) -> {
-            buffer.append(line).append("\r\n");
-        });
+        streamProcessorInfo.forEach((String line) -> 
+            buffer.append(line).append("\r\n")
+        );
         return buffer.toString();
     }
 
@@ -46,9 +46,9 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
         if (new File(CPUTEMP).exists()) {
             Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUTEMP);
 
-            streamProcessorInfo.forEach((String line) -> {
-                buffer.append(line).append("\r\n");
-            });
+            streamProcessorInfo.forEach((String line) -> 
+                buffer.append(line).append("\r\n")
+            );
         }
         return buffer.toString();
     }

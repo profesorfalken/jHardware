@@ -55,9 +55,9 @@ public final class UnixOSInfo extends AbstractOSInfo {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE);
         final StringBuilder buffer = new StringBuilder();
 
-        streamProcessorInfo.forEach((String line) -> {
-            buffer.append(line).append("\r\n");
-        });
+        streamProcessorInfo.forEach((String line) -> 
+            buffer.append(line).append("\r\n")
+        );
 
         return buffer.toString();
     }

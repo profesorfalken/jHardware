@@ -47,21 +47,7 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
                 networkDataMap.put("interface_" + count, extractUntilSpace(dataLine));
                 networkDataMap.put("type_" + count, extractText(dataLine, "Link encap:", "  "));
             } else {
-                String lineType = extractUntilSpace(dataLine);
-                if ("inet".equals(lineType)) {
-                    networkDataMap.put("ipv4_" + count, extractText(dataLine, "addr:", " "));
-                } else if ("inet6".equals(lineType)) {
-                    networkDataMap.put("ipv6_" + count, extractText(dataLine, "addr:", " "));
-                } else if ("RX".equals(lineType)) {
-                    if (dataLine.trim().startsWith("RX packets")) {
-                        networkDataMap.put("received_packets_" + count, extractText(dataLine, "packets:", " "));
-                    } else {
-                        networkDataMap.put("received_bytes_" + count, extractText(dataLine, "RX bytes:", " "));
-                        networkDataMap.put("transmitted_bytes_" + count, extractText(dataLine, "TX bytes:", " "));
-                    }
-                } else if ("TX".equals(lineType)) {
-                    networkDataMap.put("transmitted_packets_" + count, extractText(dataLine, "packets:", " "));
-                }
+                updateNetworkData(networkDataMap, count, dataLine);
             }
         }
         networkDataMap.put("interfacesLength", String.valueOf(count));
@@ -69,14 +55,36 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         return networkDataMap;
     }
 
+    private void updateNetworkData(Map<String, String> networkDataMap, int count, String dataLine) {
+        String lineType = extractUntilSpace(dataLine);
+        if (null != lineType) switch (lineType) {
+            case "inet":
+                networkDataMap.put("ipv4_" + count, extractText(dataLine, "addr:", " "));
+                break;
+            case "inet6":
+                networkDataMap.put("ipv6_" + count, extractText(dataLine, "addr:", " "));
+                break;
+            case "RX":
+                if (dataLine.trim().startsWith("RX packets")) {
+                    networkDataMap.put("received_packets_" + count, extractText(dataLine, "packets:", " "));
+                } else {
+                    networkDataMap.put("received_bytes_" + count, extractText(dataLine, "RX bytes:", " "));
+                    networkDataMap.put("transmitted_bytes_" + count, extractText(dataLine, "TX bytes:", " "));
+                }   break;
+            case "TX":
+                networkDataMap.put("transmitted_packets_" + count, extractText(dataLine, "packets:", " "));
+                break;
+        }
+    }
+
     private String extractText(String text, String startTag, String endTag) {
         if (text.trim().isEmpty()) {
             return "NOT FOUND";
         }
-        
+
         final Pattern pattern = Pattern.compile(startTag + "(.+?)" + endTag);
         final Matcher matcher = pattern.matcher(text);
-        
+
         matcher.find();
         if (matcher.groupCount() > 0) {
             return matcher.group(1);
@@ -88,7 +96,7 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         if (text.trim().isEmpty()) {
             return "NOT FOUND";
         }
-        
+
         final Pattern pattern = Pattern.compile("([^\\s]+)");
         final Matcher matcher = pattern.matcher(text);
         matcher.find();

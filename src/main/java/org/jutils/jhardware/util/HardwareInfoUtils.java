@@ -30,6 +30,11 @@ import java.util.stream.Stream;
 public class HardwareInfoUtils {
 
     private static final String CRLF = "\r\n";
+    
+    //Hide constructor
+    private HardwareInfoUtils() {
+        
+    }
 
     public static Stream<String> readFile(String filePath) {
         Path path = Paths.get(filePath);
@@ -50,7 +55,25 @@ public class HardwareInfoUtils {
 
         try {
             Process process = Runtime.getRuntime().exec(command);
-            try {
+            
+            readData(process, commandOutput, processOutput);
+        } catch (IOException ex) {
+            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (processOutput != null) {
+                try {
+                    processOutput.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return commandOutput.toString();
+    }
+    
+    private static void readData(Process process, StringBuilder commandOutput, BufferedReader processOutput) throws IOException {
+        try {
                 process.waitFor();
             } catch (InterruptedException ex) {
                 Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
@@ -68,19 +91,6 @@ public class HardwareInfoUtils {
                     commandOutput.append(line).append(CRLF);
                 }
             }
-        } catch (IOException ex) {
-            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (processOutput != null) {
-                try {
-                    processOutput.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-
-        return commandOutput.toString();
     }
 
     public static boolean isSudo() {
