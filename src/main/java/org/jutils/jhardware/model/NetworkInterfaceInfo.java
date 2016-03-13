@@ -19,7 +19,7 @@ package org.jutils.jhardware.model;
  *
  * @author javier
  */
-public class NetworkInterfaceInfo {
+public class NetworkInterfaceInfo implements ComponentInfo{
     private String name;
     private String type;
     private String ipv4;

@@ -33,7 +33,7 @@ import org.jutils.jhardware.util.OSDetector;
  * @author Javier Garcia Alonso
  */
 public class HardwareFactory {
-    
+
     /**
      * Hide constructor
      */
@@ -41,43 +41,48 @@ public class HardwareFactory {
     }
 
     public static HardwareInfo get(InfoType type) {
+        if (OSDetector.isWindows()) {
+            return getWindowsInfo(type);
+        } else if (OSDetector.isUnix()) {
+            return getUnixInfo(type);
+        } else {
+            throw new RuntimeException("Your Operating System is not supported");
+        }
+    }
+
+    private static HardwareInfo getWindowsInfo(InfoType type) {
         switch (type) {
             case PROCESSOR:
-                if (OSDetector.isWindows()) {
-                    return new WindowsProcessorInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixProcessorInfo();
-                }
+                return new WindowsProcessorInfo();
             case MEMORY:
-                if (OSDetector.isWindows()) {
-                    return new WindowsMemoryInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixMemoryInfo();
-                }
+                return new WindowsMemoryInfo();
             case BIOS:
-                if (OSDetector.isWindows()) {
-                    return new WindowsBiosInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixBiosInfo();
-                }
+                return new WindowsBiosInfo();
             case MOTHERBOARD:
-                if (OSDetector.isWindows()) {
-                    return new WindowsMotherboardInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixMotherboardInfo();
-                }
+                return new WindowsMotherboardInfo();
             case OS:
-                if (OSDetector.isWindows()) {
-                    return new WindowsOSInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixOSInfo();
-                }
+                return new WindowsOSInfo();
             case NETWORK:
-                if (OSDetector.isWindows()) {
-                    return new WindowsNetworkInfo();
-                } else if (OSDetector.isUnix()) {
-                    return new UnixNetworkInfo();
-                }
+                return new WindowsNetworkInfo();
+            default:
+                throw new IllegalArgumentException("Type of hardware not supported: " + type);
+        }
+    }
+
+    private static HardwareInfo getUnixInfo(InfoType type) {
+        switch (type) {
+            case PROCESSOR:
+                return new UnixProcessorInfo();
+            case MEMORY:
+                return new UnixMemoryInfo();
+            case BIOS:
+                return new UnixBiosInfo();
+            case MOTHERBOARD:
+                return new UnixMotherboardInfo();
+            case OS:
+                return new UnixOSInfo();
+            case NETWORK:
+                return new UnixNetworkInfo();
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);
         }
