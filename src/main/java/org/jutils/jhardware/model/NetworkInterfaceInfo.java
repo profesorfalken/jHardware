@@ -1,6 +1,4 @@
 /*
- * Copyright 2016 javier.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +15,7 @@ package org.jutils.jhardware.model;
 
 /**
  *
- * @author javier
+ * @author Javier Garcia Alonso
  */
 public class NetworkInterfaceInfo implements ComponentInfo{
     private String name;
