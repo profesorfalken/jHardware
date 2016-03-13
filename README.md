@@ -1,5 +1,6 @@
 ![](https://img.shields.io/maven-central/v/org.jhardware/jHardware.svg)
 ![](https://img.shields.io/github/license/profesorfalken/jHardware.svg)
+![](https://travis-ci.org/profesorfalken/jHardware.svg)
 
 # jHardware
 Get crossplatform hardware details with Java
