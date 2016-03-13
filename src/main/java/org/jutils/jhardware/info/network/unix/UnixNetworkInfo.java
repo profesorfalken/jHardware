@@ -72,13 +72,19 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         final Pattern pattern = Pattern.compile(startTag + "(.+?)" + endTag);
         final Matcher matcher = pattern.matcher(text);
         matcher.find();
-        return matcher.group(1);
+         if (matcher.groupCount() > 0) {
+            return matcher.group(1);
+        }
+        return "NOT FOUND";
     }
     
     private String extractUntilSpace(String text) {        
         final Pattern pattern = Pattern.compile("([^\\s]+)");
         final Matcher matcher = pattern.matcher(text);
         matcher.find();
-        return matcher.group(1);
+        if (matcher.groupCount() > 0) {
+            return matcher.group(1);
+        }
+        return "NOT FOUND";
     }
 }
