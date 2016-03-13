@@ -30,10 +30,10 @@ import java.util.stream.Stream;
 public class HardwareInfoUtils {
 
     private static final String CRLF = "\r\n";
-    
+
     //Hide constructor
     private HardwareInfoUtils() {
-        
+
     }
 
     public static Stream<String> readFile(String filePath) {
@@ -55,30 +55,23 @@ public class HardwareInfoUtils {
 
         try {
             Process process = Runtime.getRuntime().exec(command);
-            
+
             readData(process, commandOutput, processOutput);
         } catch (IOException ex) {
             Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (processOutput != null) {
-                try {
-                    processOutput.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+        } 
 
         return commandOutput.toString();
     }
-    
+
     private static void readData(Process process, StringBuilder commandOutput, BufferedReader processOutput) throws IOException {
         try {
-                process.waitFor();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-            }            
+            process.waitFor();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
+        try {
             if (process.exitValue() == 0) {
                 processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             } else {
@@ -91,6 +84,15 @@ public class HardwareInfoUtils {
                     commandOutput.append(line).append(CRLF);
                 }
             }
+        } finally {
+             if (processOutput != null) {
+                try {
+                    processOutput.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     public static boolean isSudo() {
