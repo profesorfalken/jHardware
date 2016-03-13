@@ -40,8 +40,9 @@ public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
         return fullData;
     }
 
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> motherboardDataMap = new HashMap<String, String>();
+        Map<String, String> motherboardDataMap = new HashMap<>();
         String[] dataStringLines = getMotherboardData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {

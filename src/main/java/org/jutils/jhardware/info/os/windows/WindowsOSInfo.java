@@ -26,6 +26,7 @@ import org.jutils.jhardware.info.os.AbstractOSInfo;
  */
 public final class WindowsOSInfo extends AbstractOSInfo {
 
+    @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> osDataMap
                 = WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM);

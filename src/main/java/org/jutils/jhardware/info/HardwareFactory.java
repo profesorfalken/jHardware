@@ -26,6 +26,7 @@ import org.jutils.jhardware.info.os.windows.WindowsOSInfo;
 import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
 import org.jutils.jhardware.info.processor.windows.WindowsProcessorInfo;
 import org.jutils.jhardware.util.OSDetector;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Factory class to get the right information
@@ -46,7 +47,7 @@ public class HardwareFactory {
         } else if (OSDetector.isUnix()) {
             return getUnixInfo(type);
         } else {
-            throw new RuntimeException("Your Operating System is not supported");
+            throw new UnsupportedOperationException("Your Operating System is not supported");
         }
     }
 

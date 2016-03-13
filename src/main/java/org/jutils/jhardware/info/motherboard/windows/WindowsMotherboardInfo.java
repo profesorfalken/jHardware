@@ -25,6 +25,7 @@ import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
  */
 public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
 
+    @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> motherboardDataMap = 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_BASEBOARD);

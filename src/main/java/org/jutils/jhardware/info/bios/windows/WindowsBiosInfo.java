@@ -25,6 +25,11 @@ import org.jutils.jhardware.info.bios.AbstractBiosInfo;
  */
 public final class WindowsBiosInfo extends AbstractBiosInfo {
 
+    /**
+     *
+     * @return
+     */
+    @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> biosDataMap = 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.CIM_BIOSELEMENT);

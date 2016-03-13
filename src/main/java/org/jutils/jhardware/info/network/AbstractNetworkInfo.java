@@ -27,6 +27,11 @@ import org.jutils.jhardware.model.NetworkInterfaceInfo;
  */
 public abstract class AbstractNetworkInfo implements HardwareInfo { 
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public NetworkInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }
@@ -36,7 +41,7 @@ public abstract class AbstractNetworkInfo implements HardwareInfo {
     protected NetworkInfo buildFromDataMap(Map<String, String> dataMap) {
         NetworkInfo info = new NetworkInfo();
         
-        List<NetworkInterfaceInfo> interfacesList = new ArrayList<NetworkInterfaceInfo>();
+        List<NetworkInterfaceInfo> interfacesList = new ArrayList<>();
         int interfacesLength = Integer.valueOf(dataMap.get("interfacesLength"));
         for (int i = 1; i<=interfacesLength; i++) {
             NetworkInterfaceInfo interfaceInfo = new NetworkInterfaceInfo();

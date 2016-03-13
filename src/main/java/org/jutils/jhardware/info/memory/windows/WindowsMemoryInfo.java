@@ -25,6 +25,7 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
  */
 public final class WindowsMemoryInfo extends AbstractMemoryInfo {
 
+    @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> memoryDataMap = 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PERFFORMATTEDDATA_PERFOS_MEMORY);

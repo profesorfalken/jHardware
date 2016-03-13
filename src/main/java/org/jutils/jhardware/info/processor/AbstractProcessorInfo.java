@@ -24,6 +24,7 @@ import org.jutils.jhardware.model.ProcessorInfo;
  */
 public abstract class AbstractProcessorInfo implements HardwareInfo {
 
+    @Override
     public ProcessorInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }

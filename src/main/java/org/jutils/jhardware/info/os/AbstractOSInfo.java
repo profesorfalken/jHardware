@@ -24,6 +24,11 @@ import org.jutils.jhardware.model.OSInfo;
  */
 public abstract class AbstractOSInfo implements HardwareInfo { 
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public OSInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }

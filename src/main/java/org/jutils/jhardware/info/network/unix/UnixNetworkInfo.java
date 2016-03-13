@@ -33,8 +33,9 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         return networkData;
     }
 
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> networkDataMap = new HashMap<String, String>();
+        Map<String, String> networkDataMap = new HashMap<>();
 
         String networkData = getNetworkData();
         String[] dataStringLines = networkData.split("\\r?\\n");

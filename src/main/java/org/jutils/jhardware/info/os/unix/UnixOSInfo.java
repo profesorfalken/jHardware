@@ -55,17 +55,16 @@ public final class UnixOSInfo extends AbstractOSInfo {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE);
         final StringBuilder buffer = new StringBuilder();
 
-        streamProcessorInfo.forEach(new Consumer<String>() {
-            public void accept(String line) {
-                buffer.append(line).append("\r\n");
-            }
+        streamProcessorInfo.forEach((String line) -> {
+            buffer.append(line).append("\r\n");
         });
 
         return buffer.toString();
     }
 
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> osDataMap = new HashMap<String, String>();
+        Map<String, String> osDataMap = new HashMap<>();
         
         String lsbRelease = getOSLsbReleaseData();
         String[] dataStringLines = lsbRelease.split("\\r?\\n");

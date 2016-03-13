@@ -40,8 +40,13 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
         return fullData;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> biosDataMap = new HashMap<String, String>();
+        Map<String, String> biosDataMap = new HashMap<>();
         String[] dataStringLines = getMemoryData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {

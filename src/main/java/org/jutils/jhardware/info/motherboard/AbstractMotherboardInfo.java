@@ -24,6 +24,11 @@ import org.jutils.jhardware.model.MotherboardInfo;
  */
 public abstract class AbstractMotherboardInfo implements HardwareInfo { 
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public MotherboardInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }

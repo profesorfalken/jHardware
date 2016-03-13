@@ -15,7 +15,6 @@ package org.jutils.jhardware.info.memory.unix;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
@@ -32,17 +31,16 @@ public final class UnixMemoryInfo extends AbstractMemoryInfo {
         Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO);
         final StringBuilder buffer = new StringBuilder();
         
-        streamMemoryInfo.forEach(new Consumer<String>() {
-            public void accept(String line) {
-                buffer.append(line).append("\r\n");                
-            }
+        streamMemoryInfo.forEach((String line) -> {
+            buffer.append(line).append("\r\n");
         });
         
         return buffer.toString();
     }
 
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> memoryDataMap = new HashMap<String, String>();
+        Map<String, String> memoryDataMap = new HashMap<>();
         String[] dataStringLines = getMemoryData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {

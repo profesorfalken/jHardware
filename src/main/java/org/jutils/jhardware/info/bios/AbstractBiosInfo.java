@@ -24,6 +24,11 @@ import org.jutils.jhardware.model.BiosInfo;
  */
 public abstract class AbstractBiosInfo implements HardwareInfo { 
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public BiosInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }

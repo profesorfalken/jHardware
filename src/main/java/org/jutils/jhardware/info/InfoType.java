@@ -25,4 +25,5 @@ public enum InfoType {
     MOTHERBOARD,
     OS,
     NETWORK;
+    
 }

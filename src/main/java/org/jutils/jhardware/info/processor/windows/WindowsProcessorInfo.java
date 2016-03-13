@@ -15,7 +15,6 @@ package org.jutils.jhardware.info.processor.windows;
 
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
-import java.util.HashMap;
 import java.util.Map;
 import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 
@@ -26,6 +25,11 @@ import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
  */
 public final class WindowsProcessorInfo extends AbstractProcessorInfo {
 
+    /**
+     *
+     * @return
+     */
+    @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> processorDataMap = 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PROCESSOR);  

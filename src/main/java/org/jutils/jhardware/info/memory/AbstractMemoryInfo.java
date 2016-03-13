@@ -24,6 +24,11 @@ import org.jutils.jhardware.model.MemoryInfo;
  */
 public abstract class AbstractMemoryInfo implements HardwareInfo { 
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public MemoryInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }
