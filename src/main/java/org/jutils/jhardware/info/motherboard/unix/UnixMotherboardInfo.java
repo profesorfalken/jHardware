@@ -25,9 +25,9 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
 
-    private final static String DMIPATH = "/sys/devices/virtual/dmi/id/";
+    private static final String DMIPATH = "/sys/devices/virtual/dmi/id/";
 
-    private String getMotherboardData() {
+    private static String getMotherboardData() {
         String fullData = "";
         if (HardwareInfoUtils.isSudo()) {
             fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "2");
@@ -58,7 +58,7 @@ public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
         return motherboardDataMap;
     }
 
-    private String getFeatures(String[] dataStringLines) {
+    private static String getFeatures(String[] dataStringLines) {
         StringBuilder features = new StringBuilder();
         for (final String characteristicsLine : dataStringLines) {
             if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {

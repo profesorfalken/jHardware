@@ -25,9 +25,9 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  * @author Javier Garcia Alonso
  */
 public final class UnixMemoryInfo extends AbstractMemoryInfo {
-    private final static String MEMINFO = "/proc/meminfo";
+    private static final String MEMINFO = "/proc/meminfo";
     
-    private String getMemoryData(){
+    private static String getMemoryData(){
         Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO);
         final StringBuilder buffer = new StringBuilder();
         

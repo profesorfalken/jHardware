@@ -24,6 +24,7 @@ public class OSInfo implements ComponentInfo {
     private String lastBootTime;
     private String name;
     private String manufacturer;
+    private Map<String, String> fullInfo;
 
     public String getVersion() {
         return version;
@@ -56,9 +57,6 @@ public class OSInfo implements ComponentInfo {
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
     }
-    private Map<String, String> fullInfo;
-
-    
     
     public Map<String, String> getFullInfo() {
         return fullInfo;

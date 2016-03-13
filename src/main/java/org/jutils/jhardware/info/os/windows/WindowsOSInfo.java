@@ -39,7 +39,7 @@ public final class WindowsOSInfo extends AbstractOSInfo {
         return osDataMap;
     }
 
-    private String normalizeBootUpDate(String rawBootUpTime) {
+    private static String normalizeBootUpDate(String rawBootUpTime) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, Integer.valueOf(rawBootUpTime.substring(0, 4)));
         c.set(Calendar.MONTH, Integer.valueOf(rawBootUpTime.substring(4, 6)));

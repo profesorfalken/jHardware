@@ -33,7 +33,7 @@ public abstract class AbstractBiosInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected BiosInfo buildFromDataMap(Map<String, String> dataMap) {
         BiosInfo info = new BiosInfo();

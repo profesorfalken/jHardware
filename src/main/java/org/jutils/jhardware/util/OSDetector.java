@@ -19,14 +19,13 @@ package org.jutils.jhardware.util;
  * @author Javier Garcia Alonso
  */
 public class OSDetector {
+    private static final String OS = System.getProperty("os.name").toLowerCase();
     
      /**
      * Hide constructor
      */
     private OSDetector() {
-    }
-
-    private static final String OS = System.getProperty("os.name").toLowerCase();
+    }    
 
     public static boolean isWindows() {
         return OS.contains("win");

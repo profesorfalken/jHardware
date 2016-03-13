@@ -29,7 +29,7 @@ public abstract class AbstractProcessorInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected ProcessorInfo buildFromDataMap(Map<String, String> dataMap) {
         ProcessorInfo info = new ProcessorInfo();

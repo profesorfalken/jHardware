@@ -33,7 +33,7 @@ public abstract class AbstractOSInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected OSInfo buildFromDataMap(Map<String, String> dataMap) {
         OSInfo info = new OSInfo();

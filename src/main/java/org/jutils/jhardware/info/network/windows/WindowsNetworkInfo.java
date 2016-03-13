@@ -25,18 +25,18 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
-    private String getNetworkData() {
+    private static String getNetworkData() {
         return HardwareInfoUtils.executeCommand("ipconfig", "/all");
     }
-    
-    private String getNetstatData() {
+
+    private static String getNetstatData() {
         return HardwareInfoUtils.executeCommand("netstat", "-e");
     }
 
     @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> networkDataMap = new HashMap<>();
-        
+
         String receivedBytes = null;
         String transmittedBytes = null;
         String receivedPackets = null;
@@ -75,18 +75,16 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
                 if (dataLine.contains("IP Address")) {
                     networkDataMap.put("ipv4_" + count, dataLine.split(":")[1]);
                 }
-                
+
                 if (dataLine.contains("Link-local IPv6 Address")) {
                     networkDataMap.put("ipv6_" + count, dataLine.split(":")[1]);
                 }
-                
-                if (dataLine.contains("Default Gateway")) {
-                    if (!dataLine.split(":")[1].isEmpty()) {
-                        networkDataMap.put("received_packets_" + count, receivedPackets);
-                        networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
-                        networkDataMap.put("received_bytes_" + count, receivedBytes);
-                        networkDataMap.put("transmitted_bytes_" + count, transmittedBytes);
-                    }
+
+                if (dataLine.contains("Default Gateway") && !dataLine.split(":")[1].isEmpty()) {
+                    networkDataMap.put("received_packets_" + count, receivedPackets);
+                    networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
+                    networkDataMap.put("received_bytes_" + count, receivedBytes);
+                    networkDataMap.put("transmitted_bytes_" + count, transmittedBytes);
                 }
             }
         }

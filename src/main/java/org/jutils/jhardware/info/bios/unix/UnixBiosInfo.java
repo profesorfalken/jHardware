@@ -25,9 +25,9 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixBiosInfo extends AbstractBiosInfo {
 
-    private final static String DMIPATH = "/sys/devices/virtual/dmi/id/";
+    private static final String DMIPATH = "/sys/devices/virtual/dmi/id/";
 
-    private String getMemoryData() {
+    private static String getBiosData() {
         String fullData = "";
         if (HardwareInfoUtils.isSudo()) {
             fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "0");
@@ -47,7 +47,7 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
     @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> biosDataMap = new HashMap<>();
-        String[] dataStringLines = getMemoryData().split("\\r?\\n");
+        String[] dataStringLines = getBiosData().split("\\r?\\n");
 
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("\t")) {
@@ -63,7 +63,7 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
         return biosDataMap;
     }
 
-    private String getCharacteristics(String[] dataStringLines) {
+    private static String getCharacteristics(String[] dataStringLines) {
         StringBuilder characteristics = new StringBuilder();
         for (final String characteristicsLine : dataStringLines) {
             if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {

@@ -33,7 +33,7 @@ public abstract class AbstractMotherboardInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected MotherboardInfo buildFromDataMap(Map<String, String> dataMap) {
         MotherboardInfo info = new MotherboardInfo();

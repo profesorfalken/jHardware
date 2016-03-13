@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.jutils.jhardware.info.os.AbstractOSInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
@@ -33,9 +32,10 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixOSInfo extends AbstractOSInfo {
 
-    private final static String OS_RELEASE = "/etc/os-release";
+    private static final String OS_RELEASE = "/etc/os-release";
+    private static final String LINE_BREAK_REGEX = "\\r?\\n";
 
-    private String getOSLsbReleaseData() {
+    private static String getOSLsbReleaseData() {
         String fullData = "";
 
         fullData += HardwareInfoUtils.executeCommand("lsb_release", "-a");
@@ -43,7 +43,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         return fullData;
     }
 
-    private String getOSStartTimeData() {
+    private static String getOSStartTimeData() {
         String fullData = "";
 
         fullData += HardwareInfoUtils.executeCommand("last", "-x");
@@ -51,7 +51,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         return fullData;
     }
 
-    private String getOSReleaseData() {
+    private static String getOSReleaseData() {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE);
         final StringBuilder buffer = new StringBuilder();
 
@@ -67,7 +67,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         Map<String, String> osDataMap = new HashMap<>();
         
         String lsbRelease = getOSLsbReleaseData();
-        String[] dataStringLines = lsbRelease.split("\\r?\\n");
+        String[] dataStringLines = lsbRelease.split(LINE_BREAK_REGEX);
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split(":");
@@ -75,7 +75,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         }
         
         String osRelease = getOSReleaseData();
-        dataStringLines = osRelease.split("\\r?\\n");
+        dataStringLines = osRelease.split(LINE_BREAK_REGEX);
 
         for (final String dataLine : dataStringLines) {
             String[] dataStringInfo = dataLine.split("=");
@@ -84,7 +84,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         }
         
         String startTimeFullData = getOSStartTimeData();
-        dataStringLines = startTimeFullData.split("\\r?\\n");
+        dataStringLines = startTimeFullData.split(LINE_BREAK_REGEX);
 
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("reboot")) {
@@ -101,7 +101,7 @@ public final class UnixOSInfo extends AbstractOSInfo {
         return osDataMap;
     }
     
-    private String normalizeBootUpDate(String rawBootUpdate) {
+    private static String normalizeBootUpDate(String rawBootUpdate) {
          DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm yyyy", Locale.ENGLISH);
          Date returnedDate;
          try{

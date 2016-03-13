@@ -36,7 +36,7 @@ public abstract class AbstractNetworkInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected NetworkInfo buildFromDataMap(Map<String, String> dataMap) {
         NetworkInfo info = new NetworkInfo();

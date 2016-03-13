@@ -33,7 +33,7 @@ public abstract class AbstractMemoryInfo implements HardwareInfo {
         return buildFromDataMap(parseInfo());
     }
     
-    abstract protected Map<String, String> parseInfo();
+    protected abstract Map<String, String> parseInfo();
     
     protected MemoryInfo buildFromDataMap(Map<String, String> dataMap) {
         MemoryInfo info = new MemoryInfo();

@@ -25,6 +25,9 @@ public class NetworkInterfaceInfo implements ComponentInfo{
     private String ipv4;
     private String ipv6;
     private String receivedPackets;
+    private String transmittedPackets;
+    private String receivedBytes;
+    private String transmittedBytes;
 
     public String getName() {
         return name;
@@ -88,10 +91,5 @@ public class NetworkInterfaceInfo implements ComponentInfo{
 
     public void setTransmittedBytes(String transmittedBytes) {
         this.transmittedBytes = transmittedBytes;
-    }
-    private String transmittedPackets;
-    private String receivedBytes;
-    private String transmittedBytes;
-    
-    
+    }    
 }

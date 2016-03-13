@@ -25,12 +25,11 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  *
  * @author Javier Garcia Alonso
  */
-public final class UnixNetworkInfo extends AbstractNetworkInfo {
+public final class UnixNetworkInfo extends AbstractNetworkInfo {    
+    private static final String NOT_FOUND = "NOT_FOUND";
 
-    private String getNetworkData() {
-        String networkData = HardwareInfoUtils.executeCommand("ifconfig", "-a");
-
-        return networkData;
+    private static String getNetworkData() {
+        return HardwareInfoUtils.executeCommand("ifconfig", "-a");
     }
 
     @Override
@@ -55,31 +54,36 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         return networkDataMap;
     }
 
-    private void updateNetworkData(Map<String, String> networkDataMap, int count, String dataLine) {
+    private static void updateNetworkData(Map<String, String> networkDataMap, int count, String dataLine) {
         String lineType = extractUntilSpace(dataLine);
-        if (null != lineType) switch (lineType) {
-            case "inet":
-                networkDataMap.put("ipv4_" + count, extractText(dataLine, "addr:", " "));
-                break;
-            case "inet6":
-                networkDataMap.put("ipv6_" + count, extractText(dataLine, "addr:", " "));
-                break;
-            case "RX":
-                if (dataLine.trim().startsWith("RX packets")) {
-                    networkDataMap.put("received_packets_" + count, extractText(dataLine, "packets:", " "));
-                } else {
-                    networkDataMap.put("received_bytes_" + count, extractText(dataLine, "RX bytes:", " "));
-                    networkDataMap.put("transmitted_bytes_" + count, extractText(dataLine, "TX bytes:", " "));
-                }   break;
-            case "TX":
-                networkDataMap.put("transmitted_packets_" + count, extractText(dataLine, "packets:", " "));
-                break;
+        if (null != lineType) {
+            switch (lineType) {
+                case "inet":
+                    networkDataMap.put("ipv4_" + count, extractText(dataLine, "addr:", " "));
+                    break;
+                case "inet6":
+                    networkDataMap.put("ipv6_" + count, extractText(dataLine, "addr:", " "));
+                    break;
+                case "RX":
+                    if (dataLine.trim().startsWith("RX packets")) {
+                        networkDataMap.put("received_packets_" + count, extractText(dataLine, "packets:", " "));
+                    } else {
+                        networkDataMap.put("received_bytes_" + count, extractText(dataLine, "RX bytes:", " "));
+                        networkDataMap.put("transmitted_bytes_" + count, extractText(dataLine, "TX bytes:", " "));
+                    }
+                    break;
+                case "TX":
+                    networkDataMap.put("transmitted_packets_" + count, extractText(dataLine, "packets:", " "));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    private String extractText(String text, String startTag, String endTag) {
+    private static String extractText(String text, String startTag, String endTag) {
         if (text.trim().isEmpty()) {
-            return "NOT FOUND";
+            return NOT_FOUND;
         }
 
         final Pattern pattern = Pattern.compile(startTag + "(.+?)" + endTag);
@@ -89,12 +93,12 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         if (matcher.groupCount() > 0) {
             return matcher.group(1);
         }
-        return "NOT FOUND";
+        return NOT_FOUND;
     }
 
-    private String extractUntilSpace(String text) {
+    private static String extractUntilSpace(String text) {
         if (text.trim().isEmpty()) {
-            return "NOT FOUND";
+            return NOT_FOUND;
         }
 
         final Pattern pattern = Pattern.compile("([^\\s]+)");
@@ -103,6 +107,6 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         if (matcher.groupCount() > 0) {
             return matcher.group(1);
         }
-        return "NOT FOUND";
+        return NOT_FOUND;
     }
 }

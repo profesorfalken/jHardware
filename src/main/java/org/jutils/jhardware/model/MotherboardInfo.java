@@ -20,10 +20,11 @@ import java.util.Map;
  * @author Javier Garcia Alonso
  */
 public class MotherboardInfo implements ComponentInfo {
+
     private String name;
     private String manufacturer;
     private String version;
-   
+
     private Map<String, String> fullInfo;
 
     public String getName() {
@@ -33,13 +34,21 @@ public class MotherboardInfo implements ComponentInfo {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getManufacturer() {
         return manufacturer;
     }
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
+    }
+
+    public Map<String, String> getFullInfo() {
+        return fullInfo;
+    }
+
+    public void setFullInfo(Map<String, String> fullInfo) {
+        this.fullInfo = fullInfo;
     }
 
     public String getVersion() {
@@ -49,13 +58,5 @@ public class MotherboardInfo implements ComponentInfo {
     public void setVersion(String version) {
         this.version = version;
     }
-    
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
-    }
 
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
-    }
-    
 }
