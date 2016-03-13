@@ -38,8 +38,6 @@ public final class UnixMemoryInfo extends AbstractMemoryInfo {
             }
         });
         
-        System.out.println("RAW Memory data: " + buffer.toString());
-        
         return buffer.toString();
     }
 

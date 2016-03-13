@@ -106,7 +106,7 @@ public class HardwareInfoTest {
         System.out.println("====================================");
         BiosInfo info = HardwareInfo.getBiosInfo();
 
-        assertTrue(info != null && info.getManufacturer() != null);
+        assertTrue(info != null);
         
         System.out.println("BIOS manufacturer: " + info.getManufacturer());        
         System.out.println("Last update : " + info.getDate());

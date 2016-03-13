@@ -30,8 +30,6 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
     private String getNetworkData() {
         String networkData = HardwareInfoUtils.executeCommand("ifconfig", "-a");
 
-        System.out.println("RAW Network data: " + networkData);
-
         return networkData;
     }
 
