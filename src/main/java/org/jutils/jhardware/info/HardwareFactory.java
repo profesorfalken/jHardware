@@ -26,7 +26,6 @@ import org.jutils.jhardware.info.os.windows.WindowsOSInfo;
 import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
 import org.jutils.jhardware.info.processor.windows.WindowsProcessorInfo;
 import org.jutils.jhardware.util.OSDetector;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Factory class to get the right information

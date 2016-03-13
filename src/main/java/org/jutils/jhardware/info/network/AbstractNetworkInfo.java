@@ -42,7 +42,7 @@ public abstract class AbstractNetworkInfo implements HardwareInfo {
         NetworkInfo info = new NetworkInfo();
         
         List<NetworkInterfaceInfo> interfacesList = new ArrayList<>();
-        int interfacesLength = Integer.valueOf(dataMap.get("interfacesLength"));
+        int interfacesLength = Integer.parseInt(dataMap.get("interfacesLength"));
         for (int i = 1; i<=interfacesLength; i++) {
             NetworkInterfaceInfo interfaceInfo = new NetworkInterfaceInfo();
             interfaceInfo.setName(dataMap.get("interface_" + i));

@@ -35,7 +35,7 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
             fullData += "\tRelease Date: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_date");
             fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_vendor");
             fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_version");
-        }        
+        }
 
         return fullData;
     }
@@ -55,17 +55,21 @@ public final class UnixBiosInfo extends AbstractBiosInfo {
                 if (dataStringInfo.length == 2) {
                     biosDataMap.put(dataStringInfo[0].trim(), dataStringInfo[1].trim());
                 } else if (dataStringInfo.length == 1 && "\tCharacteristics".equals(dataStringInfo[0])) {
-                    String characteristics = "";
-                    for (final String characteristicsLine : dataStringLines) {
-                        if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
-                            characteristics += characteristicsLine.trim() + "\n";
-                        }
-                    }
-                    biosDataMap.put(dataStringInfo[0].trim(), characteristics);
+                    biosDataMap.put(dataStringInfo[0].trim(), getCharacteristics(dataStringLines));
                 }
             }
         }
 
         return biosDataMap;
+    }
+
+    private String getCharacteristics(String[] dataStringLines) {
+        StringBuilder characteristics = new StringBuilder();
+        for (final String characteristicsLine : dataStringLines) {
+            if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
+                characteristics.append(characteristicsLine.trim()).append("\n");
+            }
+        }
+        return characteristics.toString();
     }
 }

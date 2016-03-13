@@ -50,17 +50,21 @@ public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
                 String[] dataStringInfo = dataLine.split(":");
                 if (dataStringInfo.length == 2) {
                     motherboardDataMap.put(dataStringInfo[0].trim(), dataStringInfo[1].trim());
-                } else if (dataStringInfo.length == 1 && "\tFeatures".equals(dataStringInfo[0])) {
-                    String features = "";
-                    for (final String characteristicsLine : dataStringLines) {
-                        if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
-                            features += characteristicsLine.trim() + "\n";
-                        }
-                    }
-                    motherboardDataMap.put(dataStringInfo[0].trim(), features);
+                } else if (dataStringInfo.length == 1 && "\tFeatures".equals(dataStringInfo[0])) {                    
+                    motherboardDataMap.put(dataStringInfo[0].trim(), getFeatures(dataStringLines));
                 }
             }
         }
         return motherboardDataMap;
+    }
+
+    private String getFeatures(String[] dataStringLines) {
+        StringBuilder features = new StringBuilder();
+        for (final String characteristicsLine : dataStringLines) {
+            if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
+                features.append(characteristicsLine.trim()).append("\n");
+            }
+        }
+        return features.toString();
     }
 }

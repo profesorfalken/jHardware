@@ -31,9 +31,9 @@ public final class UnixMemoryInfo extends AbstractMemoryInfo {
         Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO);
         final StringBuilder buffer = new StringBuilder();
         
-        streamMemoryInfo.forEach((String line) -> {
-            buffer.append(line).append("\r\n");
-        });
+        streamMemoryInfo.forEach((String line) -> 
+            buffer.append(line).append("\r\n")
+        );
         
         return buffer.toString();
     }

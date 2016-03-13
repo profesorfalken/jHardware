@@ -33,8 +33,9 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         return HardwareInfoUtils.executeCommand("netstat", "-e");
     }
 
+    @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> networkDataMap = new HashMap<String, String>();
+        Map<String, String> networkDataMap = new HashMap<>();
         
         String receivedBytes = null;
         String transmittedBytes = null;
