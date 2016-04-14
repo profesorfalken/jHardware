@@ -96,7 +96,7 @@ public class HardwareInfoUtils {
     }
 
     public static boolean isSudo() {
-        return !HardwareInfoUtils.executeCommand("sudo", "-n", "true").contains("a password is required");
+        return executeCommand("sudo", "-n", "true").length() == 0;
     }
 
     public static String toCamelCase(String s) {
