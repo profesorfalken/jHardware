@@ -34,7 +34,7 @@ To retrieve hardware data we only have to call an static method. This method wil
     System.out.println("Speed (Mhz): " + info.getMhz());
     //[...]
 
-    //Get all info for map
+    //Get all info from map
     Set<Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
         
     for (final Entry<String, String> fullInfo : fullInfos) {
