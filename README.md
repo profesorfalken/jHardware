@@ -3,23 +3,23 @@
 ![](https://travis-ci.org/profesorfalken/jHardware.svg)
 
 # jHardware
-Get crossplatform hardware details with Java
+Get crossplatform hardware details using pure Java. 
 
 ## Installation ##
 
-To install jHardware you can add the dependecy to your software project management tool: http://mvnrepository.com/artifact/org.jhardware/jHardware/0.6
+To install jHardware you can add the dependecy to your software project management tool: http://mvnrepository.com/artifact/org.jhardware/jHardware/0.6.1
 
 For example, for Maven you have just to add to your pom.xml: 
 
      <dependency>
           <groupId>org.jhardware</groupId>
           <artifactId>jHardware</artifactId>
-          <version>0.6</version>
+          <version>0.6.1</version>
      </dependency>
 
 
 Instead, you can direct download the JAR file and add it to your classpath. 
-http://central.maven.org/maven2/org/jhardware/jHardware/0.6/jHardware-0.6.jar
+http://central.maven.org/maven2/org/jhardware/jHardware/0.6.1/jHardware-0.6.1.jar
 
 ## Basic Usage ##
 
@@ -43,6 +43,10 @@ To retrieve hardware data we only have to call an static method. This method wil
 ```
 
 Same for other hardware components as Memory, Motherboard, Bios...
+
+## Similar projects ##
+
+Another similar project with the same goal is [OSHI](https://github.com/dblock/oshi) (Linux, Mac and Windows compatible). Instead of pure Java it uses native code accessed by [JNA](https://github.com/java-native-access/jna).
     
 ## More info ##
 
