@@ -73,16 +73,15 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
             if (reading) {
                 if (dataLine.contains("IP Address") || dataLine.contains("IPv4 Address")) {
-                    networkDataMap.put("ipv4_" + count, dataLine.split(":", 2)[1]);
+                    networkDataMap.put("ipv4_" + count, getValueFromDataLine(dataLine));
                 }
 
                 if (dataLine.contains("Link-local IPv6 Address")) {
-                    networkDataMap.put("ipv6_" + count, dataLine.split(":", 2)[1]);
+                    networkDataMap.put("ipv6_" + count, getValueFromDataLine(dataLine));
                 }
 
                 if (dataLine.contains("Default Gateway")) {
-                    String[] data = dataLine.split(":", 2);
-                    if (data.length > 1 && !data[1].isEmpty()) {
+                    if (getValueFromDataLine(dataLine) != null) {
                         networkDataMap.put("received_packets_" + count, receivedPackets);
                         networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
                         networkDataMap.put("received_bytes_" + count, receivedBytes);
@@ -95,5 +94,14 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         networkDataMap.put("interfacesLength", String.valueOf(count));
 
         return networkDataMap;
+    }
+    
+    private static String getValueFromDataLine(String dataLine) {
+        String[] data = dataLine.split(":", 2);
+        
+        if (data.length > 1 && !data[1].isEmpty()) {
+            return data[1];
+        }
+        return null;
     }
 }
