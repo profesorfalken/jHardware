@@ -61,7 +61,7 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         boolean reading = false;
         int count = 0;
         for (final String dataLine : dataStringLines) {
-            if (!dataLine.startsWith(" ")) {
+            if (!dataLine.trim().isEmpty() && !dataLine.startsWith(" ")) {
                 reading = false;
                 if (!dataLine.contains("Windows IP Configuration")) {
                     count++;
@@ -72,19 +72,22 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
             }
 
             if (reading) {
-                if (dataLine.contains("IP Address")) {
-                    networkDataMap.put("ipv4_" + count, dataLine.split(":")[1]);
+                if (dataLine.contains("IP Address") || dataLine.contains("IPv4 Address")) {
+                    networkDataMap.put("ipv4_" + count, dataLine.split(":", 2)[1]);
                 }
 
                 if (dataLine.contains("Link-local IPv6 Address")) {
-                    networkDataMap.put("ipv6_" + count, dataLine.split(":")[1]);
+                    networkDataMap.put("ipv6_" + count, dataLine.split(":", 2)[1]);
                 }
 
-                if (dataLine.contains("Default Gateway") && !dataLine.split(":")[1].isEmpty()) {
-                    networkDataMap.put("received_packets_" + count, receivedPackets);
-                    networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
-                    networkDataMap.put("received_bytes_" + count, receivedBytes);
-                    networkDataMap.put("transmitted_bytes_" + count, transmittedBytes);
+                if (dataLine.contains("Default Gateway")) {
+                    String[] data = dataLine.split(":", 2);
+                    if (data.length > 1 && !data[1].isEmpty()) {
+                        networkDataMap.put("received_packets_" + count, receivedPackets);
+                        networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
+                        networkDataMap.put("received_bytes_" + count, receivedBytes);
+                        networkDataMap.put("transmitted_bytes_" + count, transmittedBytes);
+                    }
                 }
             }
         }
