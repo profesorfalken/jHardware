@@ -77,12 +77,15 @@ public class HardwareInfoUtils {
             } else {
                 processOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             }
+            
+            //Fix for hanging on windows 10. Flush output before start reading
+            System.out.flush();
 
-            String line;
+            String line;            
             while ((line = processOutput.readLine()) != null) {
                 if (!line.isEmpty()) {
                     commandOutput.append(line).append(CRLF);
-                }
+                }                
             }
         } finally {
              if (processOutput != null) {
