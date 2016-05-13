@@ -65,7 +65,7 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
         String temperature = getTemperatureData();
         if (temperature != null && !temperature.isEmpty()) {
-            processorDataMap.put("Temperature", String.valueOf(Integer.valueOf(temperature) / 2) + "C");
+            processorDataMap.put("Temperature", String.valueOf(Integer.valueOf(temperature.trim()) / 1000) + "C");
         } else {
             processorDataMap.put("Temperature", "NOT DETECTED");
         }
