@@ -18,6 +18,7 @@ import java.util.Set;
 import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
 import org.jutils.jhardware.model.BiosInfo;
+import org.jutils.jhardware.model.DisplayInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.NetworkInfo;
@@ -93,6 +94,15 @@ public class HardwareInfo {
      */
     public static NetworkInfo getNetworkInfo() {
         return (NetworkInfo)HardwareFactory.get(InfoType.NETWORK).getInfo();
+    }
+    
+    /**
+     * Gets information related with the Display
+     * 
+     * @return object with typed common data and a map with full data
+     */
+    public static DisplayInfo getDisplayInfo() {
+        return (DisplayInfo)HardwareFactory.get(InfoType.DISPLAY).getInfo();
     }
     
     public static void main(String [] args) {
