@@ -43,7 +43,7 @@ public abstract class AbstractProcessorInfo implements HardwareInfo {
             info.setModelName(dataMap.get("model name"));
             info.setNumCores(dataMap.get("cpu cores"));
             info.setStepping(dataMap.get("stepping"));
-            info.setTemperature(dataMap.get("Temperature"));
+            info.setTemperature(dataMap.get("temperature"));
             info.setVendorId(dataMap.get("vendor_id"));
         }
         

@@ -13,6 +13,8 @@
  */
 package org.jutils.jhardware;
 
+import java.util.Map;
+import java.util.Set;
 import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
 import org.jutils.jhardware.model.BiosInfo;
@@ -91,5 +93,25 @@ public class HardwareInfo {
      */
     public static NetworkInfo getNetworkInfo() {
         return (NetworkInfo)HardwareFactory.get(InfoType.NETWORK).getInfo();
+    }
+    
+    public static void main(String [] args) {
+        ProcessorInfo info = HardwareInfo.getProcessorInfo();
+
+        System.out.println("Cache size: " + info.getCacheSize());        
+        System.out.println("Family: " + info.getFamily());
+        System.out.println("Speed (Mhz): " + info.getMhz());
+        System.out.println("Model: " + info.getModel());
+        System.out.println("Model name: " + info.getModelName());
+        System.out.println("Number of cores: " + info.getNumCores());
+        System.out.println("Stepping: " + info.getStepping());
+        System.out.println("Temperature: " + info.getTemperature());
+        System.out.println("Vendor Id: " + info.getVendorId());
+        
+        Set<Map.Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
+        
+        fullInfos.stream().forEach((fullInfo) -> {
+            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
+        });
     }
 }

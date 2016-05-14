@@ -49,14 +49,14 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
         
         //https://www.kernel.org/doc/Documentation/thermal/sysfs-api.txt
         //Second try: /sys/class/thermal
-        int sensorIndex = 1;
+        int sensorIndex = 0;
         while (true) {
             if (new File(CPUTEMP_THERMAL_ROOT + sensorIndex).exists()) {
                 String tempFile = CPUTEMP_THERMAL_ROOT + sensorIndex + "/" + CPUTEMP_THERMAL_FILE;
                 String value = HardwareInfoUtils.getSingleValueFromFile(tempFile);
-                if (value != null && value.isEmpty()) {
+                if (value != null && !value.isEmpty()) {
                     int tempValue = Integer.valueOf(value.trim()) / 1000;
-                    buffer.append("cpu").append(sensorIndex++).append(":").append(tempValue).append("\r\n");
+                    buffer.append("cpu").append(sensorIndex).append(":").append(tempValue).append(";");
                 }                
             } else {
                 break;
