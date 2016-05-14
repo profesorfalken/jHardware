@@ -49,7 +49,7 @@ public final class WindowsProcessorInfo extends AbstractProcessorInfo {
         Map<String, String> temperatureDataMap = 
                 WMI4Java.get().VBSEngine().namespace("root/wmi").getWMIObject("MSAcpi_ThermalZoneTemperature");
         if (temperatureDataMap.containsKey("CurrentTemperature")) {
-            processorDataMap.put("Temperature", 
+            processorDataMap.put("temperature", 
                     String.valueOf(Integer.valueOf(processorDataMap.get("CurrentTemperature")) / 10 - 273));
         } else {
             processorDataMap.put("Temperature", 

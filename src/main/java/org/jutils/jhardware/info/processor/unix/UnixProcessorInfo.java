@@ -28,7 +28,9 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
 public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
     private static final String CPUINFO = "/proc/cpuinfo";
-    private static final String CPUTEMP = "/sys/class/thermal/thermal_zone2/temp";
+    private static final String CPUTEMP_THERMAL_ROOT = "/sys/class/thermal/thermal_zone";
+    private static final String CPUTEMP_THERMAL_FILE = "temp";
+    
 
     public static String getProcessorData() {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
@@ -42,13 +44,26 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
     public static String getTemperatureData() {
         final StringBuilder buffer = new StringBuilder();
-        if (new File(CPUTEMP).exists()) {
-            Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUTEMP);
-
-            streamProcessorInfo.forEach((String line) -> 
-                buffer.append(line).append("\r\n")
-            );
+        
+        //TODO: First try: sensors        
+        
+        //https://www.kernel.org/doc/Documentation/thermal/sysfs-api.txt
+        //Second try: /sys/class/thermal
+        int sensorIndex = 1;
+        while (true) {
+            if (new File(CPUTEMP_THERMAL_ROOT + sensorIndex).exists()) {
+                String tempFile = CPUTEMP_THERMAL_ROOT + sensorIndex + "/" + CPUTEMP_THERMAL_FILE;
+                String value = HardwareInfoUtils.getSingleValueFromFile(tempFile);
+                if (value != null && value.isEmpty()) {
+                    int tempValue = Integer.valueOf(value.trim()) / 1000;
+                    buffer.append("cpu").append(sensorIndex++).append(":").append(tempValue).append("\r\n");
+                }                
+            } else {
+                break;
+            }
+            sensorIndex++;
         }
+        
         return buffer.toString();
     }
 
@@ -65,9 +80,9 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
         String temperature = getTemperatureData();
         if (temperature != null && !temperature.isEmpty()) {
-            processorDataMap.put("Temperature", String.valueOf(Integer.valueOf(temperature.trim()) / 1000) + "C");
+            processorDataMap.put("temperature", temperature);
         } else {
-            processorDataMap.put("Temperature", "NOT DETECTED");
+            processorDataMap.put("temperature", "NOT DETECTED");
         }
 
         return processorDataMap;

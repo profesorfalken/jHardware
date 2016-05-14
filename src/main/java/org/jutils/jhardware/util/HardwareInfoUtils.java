@@ -48,6 +48,12 @@ public class HardwareInfoUtils {
 
         return fileLines;
     }
+    
+    public static String getSingleValueFromFile(String filePath) {
+        Stream<String> streamProcessorInfo = readFile(filePath);
+
+        return streamProcessorInfo.findFirst().get();
+    }
 
     public static String executeCommand(String... command) {
         StringBuilder commandOutput = new StringBuilder();        
