@@ -16,6 +16,7 @@ package org.jutils.jhardware.info.processor.windows;
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
+import java.util.Set;
 import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 
 /**
@@ -46,9 +47,30 @@ public final class WindowsProcessorInfo extends AbstractProcessorInfo {
         processorDataMap.put("vendor_id", processorDataMap.get("Manufacturer"));
         processorDataMap.put("cpu cores", processorDataMap.get("NumberOfCores"));
         
+        //First try with Win32_TemperatureProbe 
+        //TODO: should be nice but it is not supported
+        
+        //https://msdn.microsoft.com/en-us/library/aa394493(v=vs.85).aspx
+        
+        //Most of the information that the Win32_TemperatureProbe WMI class provides
+        //comes from SMBIOS. Real-time readings for the CurrentReading property 
+        //cannot be extracted from SMBIOS tables. For this reason, 
+        //current implementations of WMI do not populate the CurrentReading property. 
+        //The CurrentReading property's presence is reserved for future use.
+        /*Map<String, String> temperatureProbeDataMap = 
+                WMI4Java.get().VBSEngine().getWMIObject("Win32_TemperatureProbe");*/
+        
+        
+        //We take the temperature from MSAcpi_ThermalZoneTemperature
+        //This is not optimal since most manufacturers does not fill this information.
+        //Moreover, the values are not updated in real time.
+        
+        //It does not even give a temperature separated by core. I have to improve this somehow...
         Map<String, String> temperatureDataMap = 
                 WMI4Java.get().VBSEngine().namespace("root/wmi").getWMIObject("MSAcpi_ThermalZoneTemperature");
+        
         if (temperatureDataMap.containsKey("CurrentTemperature")) {
+            //Convert from tens of kelvin to centigrades
             processorDataMap.put("temperature", 
                     String.valueOf(Integer.valueOf(processorDataMap.get("CurrentTemperature")) / 10 - 273));
         } else {
