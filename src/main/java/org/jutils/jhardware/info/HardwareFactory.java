@@ -15,6 +15,8 @@ package org.jutils.jhardware.info;
 
 import org.jutils.jhardware.info.bios.unix.UnixBiosInfo;
 import org.jutils.jhardware.info.bios.windows.WindowsBiosInfo;
+import org.jutils.jhardware.info.display.unix.UnixDisplayInfo;
+import org.jutils.jhardware.info.display.windows.WindowsDisplayInfo;
 import org.jutils.jhardware.info.memory.unix.UnixMemoryInfo;
 import org.jutils.jhardware.info.memory.windows.WindowsMemoryInfo;
 import org.jutils.jhardware.info.motherboard.unix.UnixMotherboardInfo;
@@ -64,6 +66,8 @@ public class HardwareFactory {
                 return new WindowsOSInfo();
             case NETWORK:
                 return new WindowsNetworkInfo();
+            case DISPLAY:
+                return new WindowsDisplayInfo();
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);
         }
@@ -83,6 +87,8 @@ public class HardwareFactory {
                 return new UnixOSInfo();
             case NETWORK:
                 return new UnixNetworkInfo();
+            case DISPLAY:
+                return new UnixDisplayInfo();
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);
         }

@@ -24,6 +24,6 @@ public enum InfoType {
     BIOS,
     MOTHERBOARD,
     OS,
-    NETWORK;
-    
+    NETWORK,
+    DISPLAY;
 }
