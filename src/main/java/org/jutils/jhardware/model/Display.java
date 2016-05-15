@@ -20,10 +20,19 @@ package org.jutils.jhardware.model;
  * @author javier
  */
 public class Display {
+    private String name;
     private String currentResolution;
     private String refreshRate;
     private String[] supportedResolutions;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     public String getCurrentResolution() {
         return currentResolution;
     }

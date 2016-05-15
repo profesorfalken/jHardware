@@ -44,11 +44,12 @@ public abstract class AbstractDisplayInfo implements HardwareInfo {
         List<Display> displayList = new ArrayList<>();
         if (dataMap != null && !dataMap.isEmpty()) {
             int numOfDisplays = Integer.parseInt(dataMap.get("numOfDisplays"));
-            for (int i = 0; i <= numOfDisplays; i++) {
+            for (int i = 0; i < numOfDisplays; i++) {
                 Display display = new Display();
                 
-                display.setCurrentResolution(dataMap.get("name_" + i));
-                display.setRefreshRate(dataMap.get("current_res_" + i));
+                display.setName(dataMap.get("name_" + i));
+                display.setCurrentResolution(dataMap.get("current_res_" + i));
+                display.setRefreshRate(dataMap.get("current_refresh_rate_" + i));                
                 display.setSupportedResolutions(dataMap.get("available_res_" + i).split(";"));
                 
                 displayList.add(display);

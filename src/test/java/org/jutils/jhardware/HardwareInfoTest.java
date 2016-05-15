@@ -14,6 +14,7 @@
 
 package org.jutils.jhardware;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,6 +24,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
+import org.jutils.jhardware.model.Display;
+import org.jutils.jhardware.model.DisplayInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.NetworkInfo;
@@ -213,6 +216,31 @@ public class HardwareInfoTest {
         }
         
         System.out.println("End testing getNetworkInfo...");
+        System.out.println("====================================");
+    }
+    
+    /**
+     * Test of getDisplayInfo method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void getDisplayInfo() {               
+        System.out.println("Testing getDisplayInfo...");
+        System.out.println("====================================");
+        DisplayInfo info = HardwareInfo.getDisplayInfo();
+        
+        assertTrue(info != null && info.getDisplayDevices() != null);
+
+        List<Display> displays = info.getDisplayDevices();
+        
+        for (final Display display : displays) {
+            System.out.println("----------Display: " + display.getName() + "---------");
+            System.out.println("Current Resolution: " + display.getCurrentResolution());
+            System.out.println("Current Refresh Rate: " + display.getRefreshRate());
+            System.out.println("Available Resolutions: " + Arrays.toString(display.getSupportedResolutions()));
+            System.out.println("------------------------------------------------------");
+        }
+        
+        System.out.println("End testing getDisplayInfo...");
         System.out.println("====================================");
     }
 }

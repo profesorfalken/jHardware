@@ -46,10 +46,17 @@ public final class UnixDisplayInfo extends AbstractDisplayInfo {
             if (dataLine.startsWith("Screen")) {
                 count++; 
                 displayDataMap.put("name_" + count, dataLine.substring(0, dataLine.indexOf(":")));
-                displayDataMap.put("current_res_" + count, HardwareInfoUtils.extractText(dataLine, "Current (.+?),"));
-            } else if (dataLine.startsWith("\t")) {
-                String[] availableResData = dataLine.split("\t");
-                displayDataMap.put("available_res_" + count, availableResData[0] + "x" + availableResData[1] + ";");
+                displayDataMap.put("current_res_" + count, HardwareInfoUtils.extractText(dataLine, "current (.+?),"));
+            } else if (Character.isWhitespace(dataLine.charAt(0))) {
+                String[] availableResData = dataLine.split("\\s+");
+                if (availableResData[2].endsWith("*+")) {
+                    displayDataMap.put("current_refresh_rate_" + count, availableResData[2].substring(0, availableResData[2].indexOf("*+")));
+                } else {
+                    String alreadyAddedResolutions = (displayDataMap.get("available_res_" + count) != null) ? 
+                            displayDataMap.get("available_res_" + count) : "";
+                    
+                    displayDataMap.put("available_res_" + count, alreadyAddedResolutions + availableResData[1] + "x" + availableResData[2] + ";");
+                }
             }
         }
         displayDataMap.put("numOfDisplays", String.valueOf(count + 1));
