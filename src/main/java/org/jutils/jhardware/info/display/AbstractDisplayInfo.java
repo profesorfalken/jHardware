@@ -13,9 +13,12 @@
  */
 package org.jutils.jhardware.info.display;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.jutils.jhardware.info.HardwareInfo;
-import org.jutils.jhardware.model.BiosInfo;
+import org.jutils.jhardware.model.Display;
+import org.jutils.jhardware.model.DisplayInfo;
 
 /**
  * Information related to BIOS
@@ -29,21 +32,29 @@ public abstract class AbstractDisplayInfo implements HardwareInfo {
      * @return
      */
     @Override
-    public BiosInfo getInfo() {
+    public DisplayInfo getInfo() {
         return buildFromDataMap(parseInfo());
     }
     
     protected abstract Map<String, String> parseInfo();
     
-    protected BiosInfo buildFromDataMap(Map<String, String> dataMap) {
-        BiosInfo info = new BiosInfo();
-        info.setFullInfo(dataMap);
+    protected DisplayInfo buildFromDataMap(Map<String, String> dataMap) {
+        DisplayInfo info = new DisplayInfo();
         
+        List<Display> displayList = new ArrayList<>();
         if (dataMap != null && !dataMap.isEmpty()) {
-            info.setDate(dataMap.get("Release Date"));
-            info.setManufacturer(dataMap.get("Vendor"));
-            info.setVersion(dataMap.get("Version"));
+            int numOfDisplays = Integer.parseInt(dataMap.get("numOfDisplays"));
+            for (int i = 0; i <= numOfDisplays; i++) {
+                Display display = new Display();
+                
+                display.setCurrentResolution(dataMap.get("name_" + i));
+                display.setRefreshRate(dataMap.get("current_res_" + i));
+                display.setSupportedResolutions(dataMap.get("available_res_" + i).split(";"));
+                
+                displayList.add(display);
+            }
         }
+        info.setDisplayDevices(displayList);
         
         return info;
     }

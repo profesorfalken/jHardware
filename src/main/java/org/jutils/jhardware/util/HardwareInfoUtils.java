@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -31,6 +33,8 @@ public class HardwareInfoUtils {
 
     private static final String CRLF = "\r\n";
 
+    private static final String NOT_FOUND = "NOT_FOUND";
+    
     //Hide constructor
     private HardwareInfoUtils() {
 
@@ -120,5 +124,20 @@ public class HardwareInfoUtils {
     private static String toProperCase(String s) {
         return s.substring(0, 1).toUpperCase()
                 + s.substring(1).toLowerCase();
+    }
+    
+    public static String extractText(String text, String regex) {
+        if (text.trim().isEmpty()) {
+            return NOT_FOUND;
+        }
+
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(text);
+
+        matcher.find();
+        if (matcher.groupCount() > 0) {
+            return matcher.group(1);
+        }
+        return NOT_FOUND;
     }
 }

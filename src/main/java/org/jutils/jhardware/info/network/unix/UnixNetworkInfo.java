@@ -15,8 +15,6 @@ package org.jutils.jhardware.info.network.unix;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jutils.jhardware.info.network.AbstractNetworkInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
@@ -25,8 +23,7 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  *
  * @author Javier Garcia Alonso
  */
-public final class UnixNetworkInfo extends AbstractNetworkInfo {    
-    private static final String NOT_FOUND = "NOT_FOUND";
+public final class UnixNetworkInfo extends AbstractNetworkInfo {        
 
     private static String getNetworkData() {
         return HardwareInfoUtils.executeCommand("ifconfig", "-a");
@@ -43,8 +40,8 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         for (final String dataLine : dataStringLines) {
             if (!dataLine.startsWith(" ")) {
                 count++;
-                networkDataMap.put("interface_" + count, extractText(dataLine, "([^\\s]+)"));
-                networkDataMap.put("type_" + count, extractText(dataLine, "Link encap:(.+?)  "));
+                networkDataMap.put("interface_" + count, HardwareInfoUtils.extractText(dataLine, "([^\\s]+)"));
+                networkDataMap.put("type_" + count, HardwareInfoUtils.extractText(dataLine, "Link encap:(.+?)  "));
             } else {
                 updateNetworkData(networkDataMap, count, dataLine);
             }
@@ -55,25 +52,25 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
     }
 
     private static void updateNetworkData(Map<String, String> networkDataMap, int count, String dataLine) {
-        String lineType = extractText(dataLine, "([^\\s]+)");
+        String lineType = HardwareInfoUtils.extractText(dataLine, "([^\\s]+)");
         if (null != lineType) {
             switch (lineType) {
                 case "inet":
-                    networkDataMap.put("ipv4_" + count, extractText(dataLine, "addr:(.+?) "));
+                    networkDataMap.put("ipv4_" + count, HardwareInfoUtils.extractText(dataLine, "addr:(.+?) "));
                     break;
                 case "inet6":
-                    networkDataMap.put("ipv6_" + count, extractText(dataLine, "addr:(.+?) "));
+                    networkDataMap.put("ipv6_" + count, HardwareInfoUtils.extractText(dataLine, "addr:(.+?) "));
                     break;
                 case "RX":
                     if (dataLine.trim().startsWith("RX packets")) {
-                        networkDataMap.put("received_packets_" + count, extractText(dataLine, "packets:(.+?) "));
+                        networkDataMap.put("received_packets_" + count, HardwareInfoUtils.extractText(dataLine, "packets:(.+?) "));
                     } else {
-                        networkDataMap.put("received_bytes_" + count, extractText(dataLine, "RX bytes:(.+?) "));
-                        networkDataMap.put("transmitted_bytes_" + count, extractText(dataLine, "TX bytes:(.+?) "));
+                        networkDataMap.put("received_bytes_" + count, HardwareInfoUtils.extractText(dataLine, "RX bytes:(.+?) "));
+                        networkDataMap.put("transmitted_bytes_" + count, HardwareInfoUtils.extractText(dataLine, "TX bytes:(.+?) "));
                     }
                     break;
                 case "TX":
-                    networkDataMap.put("transmitted_packets_" + count, extractText(dataLine, "packets:(.+?) "));
+                    networkDataMap.put("transmitted_packets_" + count, HardwareInfoUtils.extractText(dataLine, "packets:(.+?) "));
                     break;
                 default:
                     break;
@@ -81,18 +78,5 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         }
     }
 
-    private static String extractText(String text, String regex) {
-        if (text.trim().isEmpty()) {
-            return NOT_FOUND;
-        }
-
-        final Pattern pattern = Pattern.compile(regex);
-        final Matcher matcher = pattern.matcher(text);
-
-        matcher.find();
-        if (matcher.groupCount() > 0) {
-            return matcher.group(1);
-        }
-        return NOT_FOUND;
-    }
+    
 }

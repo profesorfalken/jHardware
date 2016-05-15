@@ -25,19 +25,11 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixDisplayInfo extends AbstractDisplayInfo {
 
-    private static final String DMIPATH = "/sys/devices/virtual/dmi/id/";
+    private static final String XRANDR_COMMAND = "xrandr";
+    private static final String XRANDR_PARAM = "-q";
 
-    private static String getBiosData() {
-        String fullData = "";
-        if (HardwareInfoUtils.isSudo()) {
-            fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "0");
-        } else {
-            fullData += "\tRelease Date: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_date");
-            fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_vendor");
-            fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "bios_version");
-        }
-
-        return fullData;
+    private static String getDisplayData() {
+        return HardwareInfoUtils.executeCommand(XRANDR_COMMAND, XRANDR_PARAM);        
     }
 
     /**
@@ -46,30 +38,22 @@ public final class UnixDisplayInfo extends AbstractDisplayInfo {
      */
     @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> biosDataMap = new HashMap<>();
-        String[] dataStringLines = getBiosData().split("\\r?\\n");
+        Map<String, String> displayDataMap = new HashMap<>();
+        String[] dataStringLines = getDisplayData().split("\\r?\\n");
 
+        int count = -1;
         for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("\t")) {
-                String[] dataStringInfo = dataLine.split(":");
-                if (dataStringInfo.length == 2) {
-                    biosDataMap.put(dataStringInfo[0].trim(), dataStringInfo[1].trim());
-                } else if (dataStringInfo.length == 1 && "\tCharacteristics".equals(dataStringInfo[0])) {
-                    biosDataMap.put(dataStringInfo[0].trim(), getCharacteristics(dataStringLines));
-                }
+            if (dataLine.startsWith("Screen")) {
+                count++; 
+                displayDataMap.put("name_" + count, dataLine.substring(0, dataLine.indexOf(":")));
+                displayDataMap.put("current_res_" + count, HardwareInfoUtils.extractText(dataLine, "Current (.+?),"));
+            } else if (dataLine.startsWith("\t")) {
+                String[] availableResData = dataLine.split("\t");
+                displayDataMap.put("available_res_" + count, availableResData[0] + "x" + availableResData[1] + ";");
             }
         }
+        displayDataMap.put("numOfDisplays", String.valueOf(count + 1));
 
-        return biosDataMap;
-    }
-
-    private static String getCharacteristics(String[] dataStringLines) {
-        StringBuilder characteristics = new StringBuilder();
-        for (final String characteristicsLine : dataStringLines) {
-            if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
-                characteristics.append(characteristicsLine.trim()).append("\n");
-            }
-        }
-        return characteristics.toString();
+        return displayDataMap;
     }
 }
