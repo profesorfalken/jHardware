@@ -13,10 +13,9 @@
  */
 package org.jutils.jhardware.info.display.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
-import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
 import org.jutils.jhardware.info.display.AbstractDisplayInfo;
+import org.jutils.jhardware.util.DirectXInfoLoader;
 
 /**
  * Information related to BIOS
@@ -31,14 +30,8 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
      */
     @Override
     protected Map<String, String> parseInfo() {
-        Map<String, String> biosDataMap = 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.CIM_BIOSELEMENT);
+        DirectXInfoLoader directXinfo = DirectXInfoLoader.get;
 
-        biosDataMap.put("Release Date", biosDataMap.get("InstallDate"));
-        biosDataMap.put("Vendor", 
-                biosDataMap.get("Manufacturer"));
-        biosDataMap.put("Version", biosDataMap.get("Version"));
-
-        return biosDataMap;
+        return null;
     }
 }
