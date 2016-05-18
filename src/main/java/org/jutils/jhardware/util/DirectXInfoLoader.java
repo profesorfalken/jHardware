@@ -18,6 +18,9 @@ package org.jutils.jhardware.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +28,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -69,7 +74,23 @@ public enum DirectXInfoLoader {
         }
     }
 
-    public Map<String, String> getDisplayInfo() {
-        return null;
+    public List<Map<String, String>> getDisplayInfo() {
+        List<Map<String, String>> displays = new ArrayList<>();
+        
+        NodeList nodeList = directXData.getElementsByTagName("DisplayDevices");
+        for (int i = 0; i<nodeList.getLength(); i++) {
+            Map<String, String> display = new HashMap<>();
+            Node node = nodeList.item(i);
+            NodeList deviceData = node.getChildNodes();
+            
+            for (int j = 0; j<deviceData.getLength(); j++) {
+                Node deviceInfo = nodeList.item(i);
+                display.put(deviceInfo.getNodeName(), deviceInfo.getNodeValue());
+            }
+            
+            displays.add(display);
+        }
+        
+        return displays;
     }
 }

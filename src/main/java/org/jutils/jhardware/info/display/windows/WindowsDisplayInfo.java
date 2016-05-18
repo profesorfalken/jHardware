@@ -32,6 +32,7 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
     protected Map<String, String> parseInfo() {
         DirectXInfoLoader directXinfo = DirectXInfoLoader.get;
 
+        directXinfo.getDisplayInfo();
         return null;
     }
 }
