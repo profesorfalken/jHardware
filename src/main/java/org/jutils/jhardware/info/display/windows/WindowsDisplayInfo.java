@@ -46,7 +46,7 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
         
         addSupportedResolutions(displayDataMap);
         
-        return displayDataMap;
+        return null;
     }
 
     private Map<String, String> getInfoFromDXDiag() {
