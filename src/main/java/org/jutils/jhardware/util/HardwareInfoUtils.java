@@ -126,6 +126,10 @@ public class HardwareInfoUtils {
                 + s.substring(1).toLowerCase();
     }
     
+    public static String removeAllSpaces(String s) {
+        return s.replaceAll("\\s+", "");
+    }
+    
     public static String extractText(String text, String regex) {
         if (text.trim().isEmpty()) {
             return NOT_FOUND;
