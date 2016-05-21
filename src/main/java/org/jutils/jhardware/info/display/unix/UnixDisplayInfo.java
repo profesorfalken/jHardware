@@ -19,7 +19,7 @@ import org.jutils.jhardware.info.display.AbstractDisplayInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
 /**
- * Information related to BIOS
+ * Information related to Displays
  *
  * @author Javier Garcia Alonso
  */

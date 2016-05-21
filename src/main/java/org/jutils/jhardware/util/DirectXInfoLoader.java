@@ -77,15 +77,23 @@ public enum DirectXInfoLoader {
     public List<Map<String, String>> getDisplayInfo() {
         List<Map<String, String>> displays = new ArrayList<>();
         
-        NodeList nodeList = directXData.getElementsByTagName("DisplayDevices");
+        Node rootNode = directXData.getElementsByTagName("DisplayDevices").item(0);
+        
+        //get all DisplayDevice elements
+        NodeList nodeList = rootNode.getChildNodes();
+        
         for (int i = 0; i<nodeList.getLength(); i++) {
             Map<String, String> display = new HashMap<>();
             Node node = nodeList.item(i);
             NodeList deviceData = node.getChildNodes();
             
+            //Get all device elements
             for (int j = 0; j<deviceData.getLength(); j++) {
-                Node deviceInfo = nodeList.item(i);
-                display.put(deviceInfo.getNodeName(), deviceInfo.getNodeValue());
+                Node deviceInfo = deviceData.item(j);
+                if (deviceInfo != null && 
+                        deviceInfo.getNodeType() == Node.ELEMENT_NODE) {
+                    display.put(deviceInfo.getNodeName(), deviceInfo.getTextContent());
+                }
             }
             
             displays.add(display);

@@ -21,7 +21,7 @@ import org.jutils.jhardware.model.Display;
 import org.jutils.jhardware.model.DisplayInfo;
 
 /**
- * Information related to BIOS
+ * Information related to Displays
  * 
  * @author Javier Garcia Alonso
  */
