@@ -17,8 +17,10 @@ import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jutils.jhardware.info.display.AbstractDisplayInfo;
 import org.jutils.jhardware.util.DirectXInfoLoader;
 import org.jutils.jhardware.util.HardwareInfoUtils;
@@ -44,7 +46,7 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
         
         addSupportedResolutions(displayDataMap);
         
-        return null;
+        return displayDataMap;
     }
 
     private Map<String, String> getInfoFromDXDiag() {
@@ -92,11 +94,31 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
     }
     
     private void addSupportedResolutions(Map<String, String> displayDataMap) {
+        Set<String> supportedResolutions = new HashSet<>();
+        StringBuilder allSupportedResolutions = new StringBuilder();
         String rawdisplayData
                 = WMI4Java.get().VBSEngine()
-                .properties(Arrays.asList("Name", "ScreenWidth", "ScreenHeight"))
+                .properties(Arrays.asList("HorizontalResolution", "VerticalResolution", "RefreshRate"))
                 .getRawWMIObjectOutput(WMIClass.CIM_VIDEOCONTROLLERRESOLUTION);
+        String[] dataStringLines = rawdisplayData.split("\\r?\\n");
+        String hRes = "";
+        String vRes = "";       
+        for (final String dataLine : dataStringLines) {
+            if (dataLine.startsWith("HorizontalResolution")) {
+                hRes = dataLine.split(":", 2)[1];
+            } else if (dataLine.startsWith("VerticalResolution")) {
+                vRes = dataLine.split(":", 2)[1];
+            } else if (dataLine.startsWith("RefreshRate")) {
+                supportedResolutions.add(
+                        HardwareInfoUtils.removeAllSpaces(hRes + "x" + vRes + "x" + dataLine.split(":", 2)[1]));                
+            }
+        }
         
+        supportedResolutions.stream().forEach((supportedResolution) -> {
+            allSupportedResolutions.append(supportedResolution).append(";");
+        });
+        
+        displayDataMap.put("available_res_0", allSupportedResolutions.toString());
     }
 
     private String getResolution(String currentMode) {
