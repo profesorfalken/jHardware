@@ -40,12 +40,31 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
     protected Map<String, String> parseInfo() {
         Map<String, String> displayDataMap = getInfoFromWin32DesktopMonitor();
 
-        /*if (!checkData(displayDataMap)) {
-         completeWithDXData(displayDataMap);
-         }*/
+        if (!checkData(displayDataMap)) {
+            completeWithDXData(displayDataMap);
+        }
         addSupportedResolutions(displayDataMap);
 
         return displayDataMap;
+    }
+
+    private boolean checkData(Map<String, String> displayDataMap) {
+        for (Map.Entry<String, String> entry : displayDataMap.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void completeWithDXData(Map<String, String> displayDataMap) {
+        Map<String, String> dxDisplayDataMap = getInfoFromDXDiag();
+
+        for (Map.Entry<String, String> entry : displayDataMap.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                entry.setValue(dxDisplayDataMap.get(entry.getKey()));
+            }
+        }
     }
 
     private Map<String, String> getInfoFromDXDiag() {
