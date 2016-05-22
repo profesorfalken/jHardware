@@ -39,14 +39,13 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
     @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> displayDataMap = getInfoFromWin32DesktopMonitor();
-        
+
         /*if (!checkData(displayDataMap)) {
-            completeWithDXData(displayDataMap);
-        }*/
-        
+         completeWithDXData(displayDataMap);
+         }*/
         addSupportedResolutions(displayDataMap);
-        
-        return null;
+
+        return displayDataMap;
     }
 
     private Map<String, String> getInfoFromDXDiag() {
@@ -68,7 +67,7 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
 
         return displayDataMap;
     }
-    
+
     private Map<String, String> getInfoFromWin32DesktopMonitor() {
         Map<String, String> displayDataMap = new HashMap<>();
         String rawdisplayData
@@ -76,10 +75,9 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
                 .properties(Arrays.asList("Name", "ScreenWidth", "ScreenHeight"))
                 .getRawWMIObjectOutput(WMIClass.WIN32_DESKTOPMONITOR);
         String[] dataStringLines = rawdisplayData.split("\\r?\\n");
-        int numDevice = -1;
+        int numDevice = 0;
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("Name")) {
-                numDevice++;
                 displayDataMap.put("name_" + numDevice, dataLine.split(":", 2)[1]);
             } else if (dataLine.startsWith("ScreenWidth")) {
                 displayDataMap.put("current_res_" + numDevice, dataLine.split(":", 2)[1]);
@@ -87,12 +85,26 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
                 displayDataMap.put("current_res_" + numDevice,
                         HardwareInfoUtils.removeAllSpaces(displayDataMap.get("current_res_" + numDevice)
                                 + "x" + dataLine.split(":", 2)[1]));
+                displayDataMap.put("current_refresh_rate_" + numDevice, getCurrentRefreshRate());
+                numDevice++;
             }
         }
 
+        displayDataMap.put("numOfDisplays", String.valueOf(numDevice));
+
         return displayDataMap;
     }
-    
+
+    private String getCurrentRefreshRate() {
+        String rawRefresRateData
+                = WMI4Java.get().VBSEngine()
+                .properties(Arrays.asList("CurrentRefreshRate"))
+                .getRawWMIObjectOutput(WMIClass.WIN32_VIDEOCONTROLLER);
+        String[] dataStringLines = rawRefresRateData.split("\\r?\\n");
+
+        return dataStringLines[0].split(":", 2)[1];
+    }
+
     private void addSupportedResolutions(Map<String, String> displayDataMap) {
         Set<String> supportedResolutions = new HashSet<>();
         StringBuilder allSupportedResolutions = new StringBuilder();
@@ -102,7 +114,7 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
                 .getRawWMIObjectOutput(WMIClass.CIM_VIDEOCONTROLLERRESOLUTION);
         String[] dataStringLines = rawdisplayData.split("\\r?\\n");
         String hRes = "";
-        String vRes = "";       
+        String vRes = "";
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("HorizontalResolution")) {
                 hRes = dataLine.split(":", 2)[1];
@@ -110,14 +122,14 @@ public final class WindowsDisplayInfo extends AbstractDisplayInfo {
                 vRes = dataLine.split(":", 2)[1];
             } else if (dataLine.startsWith("RefreshRate")) {
                 supportedResolutions.add(
-                        HardwareInfoUtils.removeAllSpaces(hRes + "x" + vRes + "x" + dataLine.split(":", 2)[1]));                
+                        HardwareInfoUtils.removeAllSpaces(hRes + "x" + vRes + "x" + dataLine.split(":", 2)[1]));
             }
         }
-        
+
         supportedResolutions.stream().forEach((supportedResolution) -> {
             allSupportedResolutions.append(supportedResolution).append(";");
         });
-        
+
         displayDataMap.put("available_res_0", allSupportedResolutions.toString());
     }
 
