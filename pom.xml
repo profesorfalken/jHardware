@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jhardware</groupId>
     <artifactId>jHardware</artifactId>
-    <version>0.7.1</version>
+    <version>0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>jHardware</name>
@@ -119,6 +119,11 @@
             <groupId>com.profesorfalken</groupId>
             <artifactId>WMI4Java</artifactId>
             <version>1.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.profesorfalken</groupId>
+            <artifactId>jSensors</artifactId>
+            <version>1.0-Alpha</version>
         </dependency>
     </dependencies>
     <properties>
