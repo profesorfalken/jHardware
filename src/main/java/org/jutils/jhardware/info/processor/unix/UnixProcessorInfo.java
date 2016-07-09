@@ -13,16 +13,12 @@
  */
 package org.jutils.jhardware.info.processor.unix;
 
-import com.profesorfalken.jsensors.JSensors;
-import com.profesorfalken.jsensors.model.components.Cpu;
-import com.profesorfalken.jsensors.model.sensors.Temperature;
-import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.TemperatureUtils;
 
 /**
  * Information related to CPU
@@ -31,9 +27,7 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  */
 public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
-    private static final String CPUINFO = "/proc/cpuinfo";
-    private static final String CPUTEMP_THERMAL_ROOT = "/sys/class/thermal/thermal_zone";
-    private static final String CPUTEMP_THERMAL_FILE = "temp";
+    private static final String CPUINFO = "/proc/cpuinfo";    
 
     public static String getProcessorData() {
         Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
@@ -42,48 +36,6 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
         streamProcessorInfo.forEach((String line)
                 -> buffer.append(line).append("\r\n")
         );
-        return buffer.toString();
-    }
-
-    public static String getTemperatureData() {
-        final StringBuilder buffer = new StringBuilder();
-        int sensorIndex = 0;
-
-        //First try: jSensors
-        boolean foundByjSensors = false;
-        List<Cpu> cpus = JSensors.get.components().cpus;
-        //For the moment jHardware only handles 1 processor
-        if (cpus.size() > 0) {
-            Cpu cpu = cpus.get(0);
-            if (cpu.sensors.temperatures != null && cpu.sensors.temperatures.size() > 0) {
-                for (Temperature temp : cpu.sensors.temperatures) {
-                    if (temp.value != null) {
-                        buffer.append("cpu").append(sensorIndex++).append(":").append(temp.value.intValue()).append(";");
-                        foundByjSensors = true;
-                    }
-                }
-            }
-        }
-
-        //https://www.kernel.org/doc/Documentation/thermal/sysfs-api.txt
-        //Second try: /sys/class/thermal
-        if (!foundByjSensors) {
-            sensorIndex = 0;
-            while (true) {
-                if (new File(CPUTEMP_THERMAL_ROOT + sensorIndex).exists()) {
-                    String tempFile = CPUTEMP_THERMAL_ROOT + sensorIndex + "/" + CPUTEMP_THERMAL_FILE;
-                    String value = HardwareInfoUtils.getSingleValueFromFile(tempFile);
-                    if (value != null && !value.isEmpty()) {
-                        int tempValue = Integer.valueOf(value.trim()) / 1000;
-                        buffer.append("cpu").append(sensorIndex).append(":").append(tempValue).append(";");
-                    }
-                } else {
-                    break;
-                }
-                sensorIndex++;
-            }
-        }
-
         return buffer.toString();
     }
 
@@ -97,13 +49,8 @@ public final class UnixProcessorInfo extends AbstractProcessorInfo {
             processorDataMap.put(dataStringInfo[0].trim(),
                     (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
         }
-
-        String temperature = getTemperatureData();
-        if (temperature != null && !temperature.isEmpty()) {
-            processorDataMap.put("temperature", temperature);
-        } else {
-            processorDataMap.put("temperature", "NOT DETECTED");
-        }
+        
+        processorDataMap.put("temperature", TemperatureUtils.getCpuTemperatureForLinux());
 
         return processorDataMap;
     }
