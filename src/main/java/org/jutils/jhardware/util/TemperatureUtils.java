@@ -105,6 +105,7 @@ public class TemperatureUtils {
                     }
                 } else {
                     temperature = NOT_DETECTED;
+                    break;
                 }
             }
         }
