@@ -23,6 +23,7 @@ package org.jutils.jhardware.model;
 public class GraphicsCardInfo implements ComponentInfo{
     private String name;
     private String manufacturer;
+    private String chipType;
     private String dacType;
     private String deviceType;
     private String temperature;
@@ -44,6 +45,14 @@ public class GraphicsCardInfo implements ComponentInfo{
         this.manufacturer = manufacturer;
     }
 
+    public String getChipType() {
+        return chipType;
+    }
+
+    public void setChipType(String chipType) {
+        this.chipType = chipType;
+    }
+    
     public String getDacType() {
         return dacType;
     }

@@ -15,10 +15,53 @@
  */
 package org.jutils.jhardware.info.graphicscard.windows;
 
+import com.profesorfalken.jsensors.JSensors;
+import com.profesorfalken.jsensors.model.components.Gpu;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.jutils.jhardware.info.graphicscard.AbstractGraphicsCardInfo;
+import org.jutils.jhardware.util.DirectXInfoLoader;
+
 /**
  *
  * @author javier
  */
-public class WindowsGraphicsCardInfo {
-    
+public class WindowsGraphicsCardInfo extends AbstractGraphicsCardInfo {
+
+    @Override
+    protected Map<String, String> parseInfo() {
+        Map<String, String> graphicsCardDataMap = new HashMap<>();
+
+        DirectXInfoLoader directXinfo = DirectXInfoLoader.get;
+        List<Map<String, String>> rawDisplayInfoMap = directXinfo.getDisplayInfo();
+        List<Gpu> gpus = JSensors.get.components().gpus;
+
+        int numDevice = 0;
+        for (final Map<String, String> displayInfoMap : rawDisplayInfoMap) {
+            graphicsCardDataMap.put("name" + numDevice, displayInfoMap.get("CardName"));
+            graphicsCardDataMap.put("manufacturer_" + numDevice, displayInfoMap.get("Manufacturer"));
+            graphicsCardDataMap.put("chip_type_" + numDevice, displayInfoMap.get("ChipType"));
+            graphicsCardDataMap.put("dac_type_" + numDevice, displayInfoMap.get("DACType"));
+            graphicsCardDataMap.put("device_type_" + numDevice, displayInfoMap.get("DeviceType"));
+
+            //Get Temperature and fan speed from jSensors
+            if (gpus.size() > numDevice) {
+                Gpu gpu = gpus.get(numDevice);
+                if (gpu.sensors.temperatures != null && !gpu.sensors.temperatures.isEmpty()) {
+                    graphicsCardDataMap.put("temperature_" + numDevice, 
+                            String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
+                }
+                if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
+                    graphicsCardDataMap.put("fan" + numDevice, 
+                            String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
+                }
+            }
+
+            numDevice++;
+        }
+        
+        return graphicsCardDataMap;
+    }
+
 }

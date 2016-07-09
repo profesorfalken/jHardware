@@ -99,4 +99,5 @@ public enum DirectXInfoLoader {
         
         return displays;
     }
+    
 }
