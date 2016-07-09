@@ -60,52 +60,46 @@ public class HardwareInfoUtils {
     }
 
     public static String executeCommand(String... command) {
-        StringBuilder commandOutput = new StringBuilder();        
+        String commandOutput = null;
 
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true); // redirect error stream to output stream
 
-            readData(process, commandOutput);
+            commandOutput = readData(processBuilder.start());
         } catch (IOException ex) {
-            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-
-        return commandOutput.toString();
-    }
-
-    private static void readData(Process process, StringBuilder commandOutput) throws IOException {
-        BufferedReader processOutput = null;
-        try {
-            process.waitFor();
-        } catch (InterruptedException ex) {
             Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        try {
-            if (process.exitValue() == 0) {
-                processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            } else {
-                processOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            }
-            
-            //Fix for hanging on windows 10. Flush output before start reading
-            System.out.flush();
+        return commandOutput;
+    }
 
-            String line;            
+    private static String readData(Process process) {
+        StringBuilder commandOutput = new StringBuilder();
+        BufferedReader processOutput = null;
+
+        try {          
+             processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            
+            String line;
             while ((line = processOutput.readLine()) != null) {
                 if (!line.isEmpty()) {
                     commandOutput.append(line).append(CRLF);
-                }                
-            }
-        } finally {
-             if (processOutput != null) {
-                try {
-                    processOutput.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        } catch (IOException ex) {
+            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (processOutput != null) {
+                    processOutput.close();
+                }
+            } catch (IOException ioe) {
+                Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ioe);
+            }
         }
+
+        return commandOutput.toString();
     }
 
     public static boolean isSudo() {
