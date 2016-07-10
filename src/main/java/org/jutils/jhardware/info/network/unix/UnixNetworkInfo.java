@@ -34,19 +34,22 @@ public final class UnixNetworkInfo extends AbstractNetworkInfo {
         Map<String, String> networkDataMap = new HashMap<>();
 
         String networkData = getNetworkData();
-        String[] dataStringLines = networkData.split("\\r?\\n");
+        
+        if (networkData != null) {
+            String[] dataStringLines = networkData.split("\\r?\\n");
 
-        int count = 0;
-        for (final String dataLine : dataStringLines) {
-            if (!dataLine.startsWith(" ")) {
-                count++;
-                networkDataMap.put("interface_" + count, HardwareInfoUtils.extractText(dataLine, "([^\\s]+)"));
-                networkDataMap.put("type_" + count, HardwareInfoUtils.extractText(dataLine, "Link encap:(.+?)  "));
-            } else {
-                updateNetworkData(networkDataMap, count, dataLine);
+            int count = 0;
+            for (final String dataLine : dataStringLines) {
+                if (!dataLine.startsWith(" ")) {
+                    count++;
+                    networkDataMap.put("interface_" + count, HardwareInfoUtils.extractText(dataLine, "([^\\s]+)"));
+                    networkDataMap.put("type_" + count, HardwareInfoUtils.extractText(dataLine, "Link encap:(.+?)  "));
+                } else {
+                    updateNetworkData(networkDataMap, count, dataLine);
+                }
             }
+            networkDataMap.put("interfacesLength", String.valueOf(count));
         }
-        networkDataMap.put("interfacesLength", String.valueOf(count));
 
         return networkDataMap;
     }
