@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.Display;
 import org.jutils.jhardware.model.DisplayInfo;
+import org.jutils.jhardware.model.GraphicsCardInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.NetworkInfo;
@@ -241,6 +242,31 @@ public class HardwareInfoTest {
         }
         
         System.out.println("End testing getDisplayInfo...");
+        System.out.println("====================================");
+    }
+    
+    /**
+     * Test of getGraphicsCardsInfo method, of class HardwareInfo.
+     */
+    @org.junit.Test
+    public void getGraphicsCardsInfo() {               
+        System.out.println("Testing getGraphicsCardsInfo...");
+        System.out.println("====================================");
+        //GraphicsCardInfo info = HardwareInfo.getGraphicsCardsInfo();
+        
+        //assertTrue(info != null && info.get() != null);
+/*
+        List<Display> displays = info.getDisplayDevices();
+        
+        for (final Display display : displays) {
+            System.out.println("----------Display: " + display.getName() + "---------");
+            System.out.println("Current Resolution: " + display.getCurrentResolution());
+            System.out.println("Current Refresh Rate: " + display.getRefreshRate());
+            System.out.println("Available Resolutions: " + Arrays.toString(display.getSupportedResolutions()));
+            System.out.println("------------------------------------------------------");
+        }
+  */      
+        System.out.println("End testing getGraphicsCardsInfo...");
         System.out.println("====================================");
     }
 }

@@ -39,7 +39,7 @@ public class WindowsGraphicsCardInfo extends AbstractGraphicsCardInfo {
 
         int numDevice = 0;
         for (final Map<String, String> displayInfoMap : rawDisplayInfoMap) {
-            graphicsCardDataMap.put("name" + numDevice, displayInfoMap.get("CardName"));
+            graphicsCardDataMap.put("name_" + numDevice, displayInfoMap.get("CardName"));
             graphicsCardDataMap.put("manufacturer_" + numDevice, displayInfoMap.get("Manufacturer"));
             graphicsCardDataMap.put("chip_type_" + numDevice, displayInfoMap.get("ChipType"));
             graphicsCardDataMap.put("dac_type_" + numDevice, displayInfoMap.get("DACType"));
@@ -53,7 +53,7 @@ public class WindowsGraphicsCardInfo extends AbstractGraphicsCardInfo {
                             String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
                 }
                 if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
-                    graphicsCardDataMap.put("fan" + numDevice, 
+                    graphicsCardDataMap.put("fan_" + numDevice, 
                             String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
                 }
             }
