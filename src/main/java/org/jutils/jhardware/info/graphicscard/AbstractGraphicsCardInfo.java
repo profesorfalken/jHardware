@@ -48,6 +48,7 @@ public abstract class AbstractGraphicsCardInfo implements HardwareInfo {
                 
                 graphicsCard.setName(dataMap.get("name_" + i));
                 graphicsCard.setManufacturer(dataMap.get("manufacturer_" + i));
+                graphicsCard.setChipType(dataMap.get("chip_type_" + i));
                 graphicsCard.setDacType(dataMap.get("dac_type_" + i));
                 graphicsCard.setDeviceType(dataMap.get("device_type_" + i));
                 graphicsCard.setTemperature(dataMap.get("temperature_" + i));
