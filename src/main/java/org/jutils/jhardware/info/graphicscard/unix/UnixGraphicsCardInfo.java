@@ -39,39 +39,43 @@ public class UnixGraphicsCardInfo extends AbstractGraphicsCardInfo {
     @Override
     protected Map<String, String> parseInfo() {
         Map<String, String> graphicsCardDataMap = new HashMap<>();        
-
-        String[] dataStringLines = getGraphicsCardData().split("\\r?\\n");
-
         int count = -1;
-        for (final String dataLine : dataStringLines) {
-            String line = dataLine.trim();
-            if (line.startsWith("*-display")) {
-                count++;
-            } else if (line.startsWith("product:")) {
-                graphicsCardDataMap.put("name_" + count, line.split(":", 2)[1]);
-            } else if (line.startsWith("vendor:")) {
-                graphicsCardDataMap.put("manufacturer_" + count, line.split(":", 2)[1]);
-            } else if (line.startsWith("description:")) {
-                graphicsCardDataMap.put("chip_type_" + count, line.split(":", 2)[1]);
-            }
-        }
+        
+        String graphicsCardData = getGraphicsCardData();
 
-        //Get Temperature and fan speed from jSensors
-        List<Gpu> gpus = JSensors.get.components().gpus;
-        for (int i = 0; i < count; i++) {
-            if (gpus.size() > i) {
-                Gpu gpu = gpus.get(i);
-                if (gpu.sensors.temperatures != null && !gpu.sensors.temperatures.isEmpty()) {
-                    graphicsCardDataMap.put("temperature_" + i,
-                            String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
-                }
-                if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
-                    graphicsCardDataMap.put("fan_" + i,
-                            String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
+        if (graphicsCardData != null) {
+            String[] dataStringLines = getGraphicsCardData().split("\\r?\\n");
+
+            
+            for (final String dataLine : dataStringLines) {
+                String line = dataLine.trim();
+                if (line.startsWith("*-display")) {
+                    count++;
+                } else if (line.startsWith("product:")) {
+                    graphicsCardDataMap.put("name_" + count, line.split(":", 2)[1]);
+                } else if (line.startsWith("vendor:")) {
+                    graphicsCardDataMap.put("manufacturer_" + count, line.split(":", 2)[1]);
+                } else if (line.startsWith("description:")) {
+                    graphicsCardDataMap.put("chip_type_" + count, line.split(":", 2)[1]);
                 }
             }
-        }
 
+            //Get Temperature and fan speed from jSensors
+            List<Gpu> gpus = JSensors.get.components().gpus;
+            for (int i = 0; i < count; i++) {
+                if (gpus.size() > i) {
+                    Gpu gpu = gpus.get(i);
+                    if (gpu.sensors.temperatures != null && !gpu.sensors.temperatures.isEmpty()) {
+                        graphicsCardDataMap.put("temperature_" + i,
+                                String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
+                    }
+                    if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
+                        graphicsCardDataMap.put("fan_" + i,
+                                String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
+                    }
+                }
+            }
+        }
         graphicsCardDataMap.put("numOfGraphicsCards", String.valueOf(count + 1));
 
         return graphicsCardDataMap;
