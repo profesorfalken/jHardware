@@ -25,5 +25,6 @@ public enum InfoType {
     MOTHERBOARD,
     OS,
     NETWORK,
-    DISPLAY;
+    DISPLAY,
+    GRAPHICSCARD;
 }

@@ -15,74 +15,23 @@
  */
 package org.jutils.jhardware.model;
 
+import java.util.List;
+
 /**
  * Model that encapsulates graphics card information
- * 
+ *
  * @author Javier Garcia Alonso
  */
-public class GraphicsCardInfo implements ComponentInfo{
-    private String name;
-    private String manufacturer;
-    private String chipType;
-    private String dacType;
-    private String deviceType;
-    private String temperature;
-    private String fanSpeed;
-    
-    public String getName() {
-        return name;
+public class GraphicsCardInfo implements ComponentInfo {
+
+    List<GraphicsCard> graphicsCards;
+
+    public List<GraphicsCard> getGraphicsCards() {
+        return graphicsCards;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGraphicsCards(List<GraphicsCard> graphicsCards) {
+        this.graphicsCards = graphicsCards;
     }
 
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public String getChipType() {
-        return chipType;
-    }
-
-    public void setChipType(String chipType) {
-        this.chipType = chipType;
-    }
-    
-    public String getDacType() {
-        return dacType;
-    }
-
-    public void setDacType(String dacType) {
-        this.dacType = dacType;
-    }
-
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    public String getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
-    }
-
-    public String getFanSpeed() {
-        return fanSpeed;
-    }
-
-    public void setFanSpeed(String fanSpeed) {
-        this.fanSpeed = fanSpeed;
-    }
-    
 }

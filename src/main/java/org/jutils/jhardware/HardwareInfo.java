@@ -19,6 +19,7 @@ import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.DisplayInfo;
+import org.jutils.jhardware.model.GraphicsCardInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
 import org.jutils.jhardware.model.NetworkInfo;
@@ -103,6 +104,15 @@ public class HardwareInfo {
      */
     public static DisplayInfo getDisplayInfo() {
         return (DisplayInfo)HardwareFactory.get(InfoType.DISPLAY).getInfo();
+    }
+    
+    /**
+     * Gets information related with the Graphics Cards
+     * 
+     * @return object with typed common data and a map with full data
+     */
+    public static GraphicsCardInfo getGraphicsCardInfo() {
+        return (GraphicsCardInfo)HardwareFactory.get(InfoType.GRAPHICSCARD).getInfo();
     }
     
     public static void main(String [] args) {

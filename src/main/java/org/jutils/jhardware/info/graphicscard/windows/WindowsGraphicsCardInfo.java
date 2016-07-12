@@ -61,6 +61,8 @@ public class WindowsGraphicsCardInfo extends AbstractGraphicsCardInfo {
             numDevice++;
         }
         
+        graphicsCardDataMap.put("numOfGraphicsCards", String.valueOf(numDevice));
+        
         return graphicsCardDataMap;
     }
 

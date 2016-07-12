@@ -17,6 +17,8 @@ import org.jutils.jhardware.info.bios.unix.UnixBiosInfo;
 import org.jutils.jhardware.info.bios.windows.WindowsBiosInfo;
 import org.jutils.jhardware.info.display.unix.UnixDisplayInfo;
 import org.jutils.jhardware.info.display.windows.WindowsDisplayInfo;
+import org.jutils.jhardware.info.graphicscard.unix.UnixGraphicsCardInfo;
+import org.jutils.jhardware.info.graphicscard.windows.WindowsGraphicsCardInfo;
 import org.jutils.jhardware.info.memory.unix.UnixMemoryInfo;
 import org.jutils.jhardware.info.memory.windows.WindowsMemoryInfo;
 import org.jutils.jhardware.info.motherboard.unix.UnixMotherboardInfo;
@@ -68,6 +70,8 @@ public class HardwareFactory {
                 return new WindowsNetworkInfo();
             case DISPLAY:
                 return new WindowsDisplayInfo();
+             case GRAPHICSCARD:
+                return new WindowsGraphicsCardInfo();
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);
         }
@@ -89,6 +93,8 @@ public class HardwareFactory {
                 return new UnixNetworkInfo();
             case DISPLAY:
                 return new UnixDisplayInfo();
+            case GRAPHICSCARD:
+                return new UnixGraphicsCardInfo();
             default:
                 throw new IllegalArgumentException("Type of hardware not supported: " + type);
         }

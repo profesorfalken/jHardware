@@ -30,10 +30,10 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
 public class UnixGraphicsCardInfo extends AbstractGraphicsCardInfo {
 
     private static final String LSHW_COMMAND = "lshw";
-    private static final String LSHW_PARAMS = "-C video";
+    private static final String LSHW_PARAMS = "-C";
 
     private static String getGraphicsCardData() {
-        return HardwareInfoUtils.executeCommand(LSHW_COMMAND, LSHW_PARAMS);
+        return HardwareInfoUtils.executeCommand(LSHW_COMMAND, LSHW_PARAMS, "video");
     }
 
     @Override

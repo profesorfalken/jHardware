@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import org.jutils.jhardware.model.BiosInfo;
 import org.jutils.jhardware.model.Display;
 import org.jutils.jhardware.model.DisplayInfo;
+import org.jutils.jhardware.model.GraphicsCard;
 import org.jutils.jhardware.model.GraphicsCardInfo;
 import org.jutils.jhardware.model.MemoryInfo;
 import org.jutils.jhardware.model.MotherboardInfo;
@@ -252,20 +253,23 @@ public class HardwareInfoTest {
     public void getGraphicsCardsInfo() {               
         System.out.println("Testing getGraphicsCardsInfo...");
         System.out.println("====================================");
-        //GraphicsCardInfo info = HardwareInfo.getGraphicsCardsInfo();
+        GraphicsCardInfo info = HardwareInfo.getGraphicsCardInfo();
         
-        //assertTrue(info != null && info.get() != null);
-/*
-        List<Display> displays = info.getDisplayDevices();
+        assertTrue(info != null && info.getGraphicsCards() != null);
+
+        List<GraphicsCard> graphicsCards = info.getGraphicsCards();
         
-        for (final Display display : displays) {
-            System.out.println("----------Display: " + display.getName() + "---------");
-            System.out.println("Current Resolution: " + display.getCurrentResolution());
-            System.out.println("Current Refresh Rate: " + display.getRefreshRate());
-            System.out.println("Available Resolutions: " + Arrays.toString(display.getSupportedResolutions()));
+        for (final GraphicsCard graphicsCard : graphicsCards) {
+            System.out.println("----------Graphics Card: " + graphicsCard.getName() + "---------");
+            System.out.println("Manufacturer: " + graphicsCard.getManufacturer());
+            System.out.println("Device Type: " + graphicsCard.getDeviceType());
+            System.out.println("DAC: " + graphicsCard.getDacType());
+            System.out.println("Chip type: " + graphicsCard.getChipType());
+            System.out.println("Temperature: " + graphicsCard.getTemperature());
+            System.out.println("Fan Speed: " + graphicsCard.getFanSpeed());
             System.out.println("------------------------------------------------------");
         }
-  */      
+      
         System.out.println("End testing getGraphicsCardsInfo...");
         System.out.println("====================================");
     }
