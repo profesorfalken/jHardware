@@ -71,7 +71,7 @@ public class TemperatureUtils {
         //We take the temperature from MSAcpi_ThermalZoneTemperature
         //This is not optimal since most manufacturers does not fill this information.
         //Moreover, the values are not updated in real time.
-        //It does not even give a temperature separated by core. I have to improve this somehow...
+        //It does not even give a temperature separated by core.
         if (NOT_DETECTED.equals(temperature)) {
             Map<String, String> temperatureDataMap
                     = WMI4Java.get().VBSEngine().namespace("root/wmi").getWMIObject("MSAcpi_ThermalZoneTemperature");
