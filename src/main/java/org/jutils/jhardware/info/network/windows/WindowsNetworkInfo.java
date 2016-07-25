@@ -48,7 +48,7 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
                 String[] infos = dataLine.split("\\s+");
                 receivedBytes = infos[1];
                 transmittedBytes = infos[2];
-            } else if (dataLine.startsWith("Unicast packets")) {
+            } else if (dataLine.startsWith("Unicast")) {
                 String[] infos = dataLine.split("\\s+");
                 receivedPackets = infos[2];
                 transmittedPackets = infos[3];
@@ -72,7 +72,7 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
             }
 
             if (reading) {
-                if (dataLine.contains("IP Address") || dataLine.contains("IPv4 Address")) {
+                if (dataLine.contains("IP Address") || dataLine.startsWith("IPv4")) {
                     networkDataMap.put("ipv4_" + count, getValueFromDataLine(dataLine));
                 }
 
@@ -80,7 +80,7 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
                     networkDataMap.put("ipv6_" + count, getValueFromDataLine(dataLine));
                 }
 
-                if (dataLine.contains("Default Gateway")) {
+                if (dataLine.toLowerCase().contains("gateway")) {
                     if (getValueFromDataLine(dataLine) != null) {
                         networkDataMap.put("received_packets_" + count, receivedPackets);
                         networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
