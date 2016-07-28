@@ -43,12 +43,14 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         String transmittedPackets = null;
         String netstatData = getNetstatData();
         String[] dataStringLines = netstatData.split("\\r?\\n");
+
+        //TODO: divide and take last two values
         for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("Bytes")) {
+            if (dataLine.startsWith("Bytes") || dataLine.startsWith("Octets")) {
                 String[] infos = dataLine.split("\\s+");
                 receivedBytes = infos[1];
                 transmittedBytes = infos[2];
-            } else if (dataLine.startsWith("Unicast")) {
+            } else if (dataLine.startsWith("Unicast") || dataLine.contains("monodiffusion")) {
                 String[] infos = dataLine.split("\\s+");
                 receivedPackets = infos[2];
                 transmittedPackets = infos[3];
@@ -61,9 +63,9 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         boolean reading = false;
         int count = 0;
         for (final String dataLine : dataStringLines) {
-            if (!dataLine.trim().isEmpty() && !dataLine.startsWith(" ")) {
+            if (!dataLine.trim().isEmpty() && !dataLine.startsWith(" ") && !dataLine.startsWith("\t")) {
                 reading = false;
-                if (!dataLine.contains("Windows IP Configuration")) {
+                if (!multiContains(dataLine, "Windows", "IP")) {
                     count++;
                     reading = true;
                     networkDataMap.put("interface_" + count, dataLine);
@@ -72,15 +74,15 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
             }
 
             if (reading) {
-                if (dataLine.contains("IP Address") || dataLine.startsWith("IPv4")) {
+                if (dataLine.contains("IP Address") || dataLine.contains("IPv4")) {
                     networkDataMap.put("ipv4_" + count, getValueFromDataLine(dataLine));
                 }
 
-                if (dataLine.contains("Link-local IPv6 Address")) {
+                if (multiContains(dataLine, "IPv6", "Address") || multiContains(dataLine, "IPv6", "Adresse")) {
                     networkDataMap.put("ipv6_" + count, getValueFromDataLine(dataLine));
                 }
 
-                if (dataLine.toLowerCase().contains("gateway")) {
+                if (dataLine.toLowerCase().contains("gateway") || dataLine.toLowerCase().contains("passerelle")) {
                     if (getValueFromDataLine(dataLine) != null) {
                         networkDataMap.put("received_packets_" + count, receivedPackets);
                         networkDataMap.put("transmitted_packets_" + count, transmittedPackets);
@@ -95,13 +97,26 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
 
         return networkDataMap;
     }
-    
+
     private static String getValueFromDataLine(String dataLine) {
         String[] data = dataLine.split(":", 2);
-        
+
         if (data.length > 1 && !data[1].isEmpty()) {
             return data[1];
         }
         return null;
+    }
+
+    private static boolean multiContains(String baseString, String... args) {
+        if (baseString == null || baseString.isEmpty()) {
+            return false;
+        }
+        for (final String arg : args) {
+            if (!baseString.contains(arg)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
