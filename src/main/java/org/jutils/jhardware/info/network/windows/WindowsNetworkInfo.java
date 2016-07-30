@@ -44,16 +44,15 @@ public final class WindowsNetworkInfo extends AbstractNetworkInfo {
         String netstatData = getNetstatData();
         String[] dataStringLines = netstatData.split("\\r?\\n");
 
-        //TODO: divide and take last two values
         for (final String dataLine : dataStringLines) {
             if (dataLine.startsWith("Bytes") || dataLine.startsWith("Octets")) {
                 String[] infos = dataLine.split("\\s+");
-                receivedBytes = infos[1];
-                transmittedBytes = infos[2];
+                receivedBytes = infos[infos.length-2];
+                transmittedBytes = infos[infos.length-1];
             } else if (dataLine.startsWith("Unicast") || dataLine.contains("monodiffusion")) {
                 String[] infos = dataLine.split("\\s+");
-                receivedPackets = infos[2];
-                transmittedPackets = infos[3];
+                receivedPackets = infos[infos.length-2];
+                transmittedPackets = infos[infos.length-1];
             }
         }
 
