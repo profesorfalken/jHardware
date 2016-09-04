@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jhardware</groupId>
     <artifactId>jHardware</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
     <packaging>jar</packaging>
     
     <name>jHardware</name>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>com.profesorfalken</groupId>
             <artifactId>jSensors</artifactId>
-            <version>1.0-Alpha</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
     <properties>
