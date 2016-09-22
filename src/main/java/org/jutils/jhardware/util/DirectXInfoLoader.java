@@ -35,69 +35,76 @@ import org.xml.sax.SAXException;
  * @author Javier Garcia Alonso
  */
 public enum DirectXInfoLoader {
-    get;
+	get;
 
-    private boolean loaded = false;
-    private Document directXData;
+	private boolean loaded = false;
+	private Document directXData;
 
-    private DirectXInfoLoader() {
-        if (!this.loaded) {
-            //TODO: handle return code
-            this.load();
-            this.loaded = true;
-        }
-    }
+	private DirectXInfoLoader() {
+		if (!this.loaded) {
+			// TODO: handle return code
+			this.load();
+			this.loaded = true;
+		}
+	}
 
-    private void load() {
-        Path tempFile;
-        try {
-            tempFile = Files.createTempFile("dxdata_" + System.currentTimeMillis(), ".tmp");
-            tempFile.toFile().deleteOnExit();
+	private void load() {
+		Path tempFile;
+		try {
+			tempFile = Files.createTempFile("dxdata_" + System.currentTimeMillis(), ".tmp");
+			tempFile.toFile().deleteOnExit();
 
-            HardwareInfoUtils.executeCommand("dxdiag", "/x", tempFile.toAbsolutePath().toString());
-        } catch (IOException ex) {
-            Logger.getLogger(DirectXInfoLoader.class.getName()).log(Level.SEVERE, "Error creating directX data", ex);
-            return;
-        }
+			HardwareInfoUtils.executeCommand("dxdiag", "/x", tempFile.toAbsolutePath().toString());
+		} catch (IOException ex) {
+			Logger.getLogger(DirectXInfoLoader.class.getName()).log(Level.SEVERE, "Error creating directX data", ex);
+			return;
+		}
 
-        DocumentBuilderFactory dbFactory
-                = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            this.directXData = dBuilder.parse(tempFile.toFile());
-            this.directXData.getDocumentElement().normalize();
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(DirectXInfoLoader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+		while (!(tempFile.toFile().length() > 0)) {
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Logger.getLogger(DirectXInfoLoader.class.getName()).log(Level.SEVERE, null, e);
+			}
+		}
 
-    public List<Map<String, String>> getDisplayInfo() {
-        List<Map<String, String>> displays = new ArrayList<>();
-        
-        Node rootNode = directXData.getElementsByTagName("DisplayDevices").item(0);
-        
-        //get all DisplayDevice elements
-        NodeList nodeList = rootNode.getChildNodes();
-        
-        for (int i = 0; i<nodeList.getLength(); i++) {
-            Map<String, String> display = new HashMap<>();
-            Node node = nodeList.item(i);
-            NodeList deviceData = node.getChildNodes();
-            
-            //Get all device elements
-            for (int j = 0; j<deviceData.getLength(); j++) {
-                Node deviceInfo = deviceData.item(j);
-                if (deviceInfo != null && 
-                        deviceInfo.getNodeType() == Node.ELEMENT_NODE) {
-                    display.put(deviceInfo.getNodeName(), deviceInfo.getTextContent());
-                }
-            }
-            
-            displays.add(display);
-        }
-        
-        return displays;
-    }
-    
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder;
+		try {
+			dBuilder = dbFactory.newDocumentBuilder();
+			this.directXData = dBuilder.parse(tempFile.toFile());
+			this.directXData.getDocumentElement().normalize();
+		} catch (ParserConfigurationException | SAXException | IOException ex) {
+			Logger.getLogger(DirectXInfoLoader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+	}
+
+	public List<Map<String, String>> getDisplayInfo() {
+		List<Map<String, String>> displays = new ArrayList<>();
+
+		Node rootNode = directXData.getElementsByTagName("DisplayDevices").item(0);
+
+		// get all DisplayDevice elements
+		NodeList nodeList = rootNode.getChildNodes();
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Map<String, String> display = new HashMap<>();
+			Node node = nodeList.item(i);
+			NodeList deviceData = node.getChildNodes();
+
+			// Get all device elements
+			for (int j = 0; j < deviceData.getLength(); j++) {
+				Node deviceInfo = deviceData.item(j);
+				if (deviceInfo != null && deviceInfo.getNodeType() == Node.ELEMENT_NODE) {
+					display.put(deviceInfo.getNodeName(), deviceInfo.getTextContent());
+				}
+			}
+
+			displays.add(display);
+		}
+
+		return displays;
+	}
+
 }
