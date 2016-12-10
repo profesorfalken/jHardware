@@ -34,7 +34,7 @@ public final class WindowsMemoryInfo extends AbstractMemoryInfo {
         memoryDataMap.put("MemAvailable", memoryDataMap.get("AvailableKBytes"));
         memoryDataMap.put("MemFree", 
                 WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
-        memoryDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
+        memoryDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("TotalPhysicalMemory"));
 
         return memoryDataMap;
     }
