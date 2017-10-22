@@ -53,7 +53,7 @@ public class WindowsGraphicsCardInfo extends AbstractGraphicsCardInfo {
                             String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
                 }
                 if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
-                    graphicsCardDataMap.put("fan_" + numDevice, 
+                    graphicsCardDataMap.put("fan_speed_" + numDevice, 
                             String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
                 }
             }

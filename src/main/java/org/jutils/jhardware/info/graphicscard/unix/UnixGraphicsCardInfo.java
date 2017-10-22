@@ -70,7 +70,7 @@ public class UnixGraphicsCardInfo extends AbstractGraphicsCardInfo {
                                 String.valueOf(gpu.sensors.temperatures.get(0).value.intValue()));
                     }
                     if (gpu.sensors.fans != null && !gpu.sensors.fans.isEmpty()) {
-                        graphicsCardDataMap.put("fan_" + i,
+                        graphicsCardDataMap.put("fan_speed_" + i,
                                 String.valueOf(gpu.sensors.fans.get(0).value.intValue()));
                     }
                 }
