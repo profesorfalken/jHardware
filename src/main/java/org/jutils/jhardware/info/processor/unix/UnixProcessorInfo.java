@@ -16,6 +16,7 @@ package org.jutils.jhardware.info.processor.unix;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+
 import org.jutils.jhardware.info.processor.AbstractProcessorInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 import org.jutils.jhardware.util.TemperatureUtils;
@@ -27,15 +28,14 @@ import org.jutils.jhardware.util.TemperatureUtils;
  */
 public final class UnixProcessorInfo extends AbstractProcessorInfo {
 
-    private static final String CPUINFO = "/proc/cpuinfo";    
+    private static final String CPUINFO = "/proc/cpuinfo";
 
     public static String getProcessorData() {
-        Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO);
         final StringBuilder buffer = new StringBuilder();
+        try (Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(CPUINFO)) {
+            streamProcessorInfo.forEach(line -> buffer.append(line).append("\r\n"));
+        }
 
-        streamProcessorInfo.forEach((String line)
-                -> buffer.append(line).append("\r\n")
-        );
         return buffer.toString();
     }
 
