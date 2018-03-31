@@ -16,6 +16,7 @@ package org.jutils.jhardware.info.memory.unix;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 import org.jutils.jhardware.util.HardwareInfoUtils;
 
@@ -25,16 +26,15 @@ import org.jutils.jhardware.util.HardwareInfoUtils;
  * @author Javier Garcia Alonso
  */
 public final class UnixMemoryInfo extends AbstractMemoryInfo {
+
     private static final String MEMINFO = "/proc/meminfo";
-    
-    private static String getMemoryData(){
-        Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO);
+
+    private static String getMemoryData() {
         final StringBuilder buffer = new StringBuilder();
-        
-        streamMemoryInfo.forEach((String line) -> 
-            buffer.append(line).append("\r\n")
-        );
-        
+        try (Stream<String> streamMemoryInfo = HardwareInfoUtils.readFile(MEMINFO)) {
+            streamMemoryInfo.forEach(line -> buffer.append(line).append("\r\n"));
+        }
+
         return buffer.toString();
     }
 
