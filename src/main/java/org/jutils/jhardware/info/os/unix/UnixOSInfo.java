@@ -52,12 +52,10 @@ public final class UnixOSInfo extends AbstractOSInfo {
     }
 
     private static String getOSReleaseData() {
-        Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE);
         final StringBuilder buffer = new StringBuilder();
-
-        streamProcessorInfo.forEach((String line) -> 
-            buffer.append(line).append("\r\n")
-        );
+        try (Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE)) {
+            streamProcessorInfo.forEach(line -> buffer.append(line).append("\r\n"));
+        }
 
         return buffer.toString();
     }

@@ -34,29 +34,26 @@ public class HardwareInfoUtils {
     private static final String CRLF = "\r\n";
 
     private static final String NOT_FOUND = "NOT_FOUND";
-    
-    //Hide constructor
-    private HardwareInfoUtils() {
 
+    private HardwareInfoUtils() {
+        //Hide constructor
     }
 
     public static Stream<String> readFile(String filePath) {
         Path path = Paths.get(filePath);
 
-        Stream<String> fileLines = null;
         try {
-            fileLines = Files.lines(path);
-        } catch (IOException ex) {
-            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ex);
+            return Files.lines(path);
+        } catch (IOException ioEx) {
+            Logger.getLogger(HardwareInfoUtils.class.getName()).log(Level.SEVERE, null, ioEx);
+            return Stream.empty();
         }
-
-        return fileLines;
     }
-    
-    public static String getSingleValueFromFile(String filePath) {
-        Stream<String> streamProcessorInfo = readFile(filePath);
 
-        return streamProcessorInfo.findFirst().get();
+    public static String getSingleValueFromFile(String filePath) {
+        try (Stream<String> streamProcessorInfo = readFile(filePath)) {
+            return streamProcessorInfo.findFirst().get();
+        }
     }
 
     public static String executeCommand(String... command) {
@@ -78,9 +75,9 @@ public class HardwareInfoUtils {
         StringBuilder commandOutput = new StringBuilder();
         BufferedReader processOutput = null;
 
-        try {          
+        try {
              processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            
+
             String line;
             while ((line = processOutput.readLine()) != null) {
                 if (!line.isEmpty()) {
@@ -119,11 +116,11 @@ public class HardwareInfoUtils {
         return s.substring(0, 1).toUpperCase()
                 + s.substring(1).toLowerCase();
     }
-    
+
     public static String removeAllSpaces(String s) {
         return s.replaceAll("\\s+", "");
     }
-    
+
     public static String extractText(String text, String regex) {
         if (text.trim().isEmpty()) {
             return NOT_FOUND;
