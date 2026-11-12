@@ -1,4 +1,8 @@
 /target/
+/.m2-analysis/
+/.idea/
+/.vscode/
+*.iml
 /nbactions.xml
 /.classpath
 /.project
