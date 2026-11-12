@@ -13,27 +13,48 @@
  */
 package org.jutils.jhardware.info.motherboard.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
+import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.WmiSupport;
 
 /**
- * Information related to Motherboard
- * 
- * @author Javier Garcia Alonso
+ * Motherboard information from WMI ({@code Win32_BaseBoard}).
  */
 public final class WindowsMotherboardInfo extends AbstractMotherboardInfo {
 
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> motherboardDataMap = 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_BASEBOARD);
-
-        motherboardDataMap.put("Product Name", motherboardDataMap.get("Name"));
-        motherboardDataMap.put("Vendor", motherboardDataMap.get("Manufacturer"));
-        motherboardDataMap.put("Version", motherboardDataMap.get("Version"));
-
-        return motherboardDataMap;
+    protected ParsedData parseInfoData() {
+        Map<String, String> wmi = WmiSupport.object(WMIClass.WIN32_BASEBOARD);
+        ParsedData data = parseWmi(wmi);
+        if (data.isEmpty()) {
+            data.warn("WMI class Win32_BaseBoard returned no data");
+        }
+        return data;
     }
+
+    /**
+     * @param wmi raw WMI properties
+     * @return parsed data
+     */
+    static ParsedData parseWmi(Map<String, String> wmi) {
+        ParsedData data = ParsedData.empty();
+        if (wmi == null || wmi.isEmpty()) {
+            return data;
+        }
+        data.putAll(wmi);
+        data.put("Product Name", HardwareInfoUtils.firstNonBlank(
+                wmi.get("Product"), wmi.get("Name")));
+        data.put("Vendor", wmi.get("Manufacturer"));
+        data.put("Version", wmi.get("Version"));
+        return data;
+    }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
+    }
+
 }

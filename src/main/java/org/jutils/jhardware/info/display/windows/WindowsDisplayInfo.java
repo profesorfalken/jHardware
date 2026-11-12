@@ -13,151 +13,181 @@
  */
 package org.jutils.jhardware.info.display.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.display.AbstractDisplayInfo;
+import org.jutils.jhardware.util.CommandRunner;
 import org.jutils.jhardware.util.DirectXInfoLoader;
 import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.SystemCommandRunner;
+import org.jutils.jhardware.util.WmiSupport;
 
 /**
- * Information related to Displays
- *
- * @author Javier Garcia Alonso
+ * Display information for Windows, from {@code dxdiag} with a WMI fallback.
  */
 public final class WindowsDisplayInfo extends AbstractDisplayInfo {
 
-    /**
-     *
-     * @return
-     */
+    private static final Pattern RESOLUTION = Pattern.compile(
+            "(\\d{3,5})\\s*x\\s*(\\d{3,5})");
+    private static final Pattern REFRESH = Pattern.compile(
+            "(\\d+(?:\\.\\d+)?)\\s*Hz");
+
+    private final CommandRunner runner;
+
+    public WindowsDisplayInfo() {
+        this(SystemCommandRunner.defaultRunner());
+    }
+
+    public WindowsDisplayInfo(CommandRunner runner) {
+        this.runner = runner == null ? SystemCommandRunner.defaultRunner() : runner;
+    }
+
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> displayDataMap = getInfoFromWin32DesktopMonitor();
-
-        if (!checkData(displayDataMap)) {
-            completeWithDXData(displayDataMap);
+    protected ParsedData parseInfoData() {
+        ParsedData data = ParsedData.empty();
+        DirectXInfoLoader.Result directX = DirectXInfoLoader.get.getResult(runner);
+        if (!directX.displays().isEmpty()) {
+            data.merge(parseDirectX(directX.displays()));
+        } else {
+            data.merge(parseWmiDesktopMonitors());
         }
-        addSupportedResolutions(displayDataMap);
-
-        return displayDataMap;
+        data.addWarnings(directX.warnings());
+        applySupportedResolutions(data);
+        if (data.getInt("numOfDisplays", 0) == 0) {
+            data.warn("No display device was reported by dxdiag or WMI");
+        }
+        return data;
     }
 
-    private boolean checkData(Map<String, String> displayDataMap) {
-        for (Map.Entry<String, String> entry : displayDataMap.entrySet()) {
-            if (entry.getValue() == null || entry.getValue().isEmpty()) {
-                return false;
+    /**
+     * @param displays dxdiag {@code DisplayDevice} maps
+     * @return parsed data
+     */
+    static ParsedData parseDirectX(List<Map<String, String>> displays) {
+        ParsedData data = ParsedData.empty();
+        if (displays == null) {
+            return data;
+        }
+        int count = 0;
+        for (Map<String, String> display : displays) {
+            String name = HardwareInfoUtils.firstNonBlank(
+                    display.get("MonitorName"), display.get("CardName"));
+            data.put("name_" + count, name);
+            String currentMode = display.get("CurrentMode");
+            Mode mode = parseMode(currentMode);
+            if (mode != null) {
+                data.put("current_res_" + count, mode.resolution());
+                data.put("current_refresh_rate_" + count, mode.refresh());
+            } else if (currentMode != null && !currentMode.trim().isEmpty()) {
+                data.warn("Could not parse the display mode: " + currentMode);
+            }
+            count++;
+        }
+        data.put("numOfDisplays", String.valueOf(count));
+        return data;
+    }
+
+    /**
+     * @param currentMode value such as {@code 1920 x 1080 (32 bit) (60Hz)}
+     * @return parsed mode, or {@code null}
+     */
+    static Mode parseMode(String currentMode) {
+        if (currentMode == null) {
+            return null;
+        }
+        Matcher resolution = RESOLUTION.matcher(currentMode);
+        if (!resolution.find()) {
+            return null;
+        }
+        String refresh = HardwareInfoUtils.extract(currentMode,
+                "(\\d+(?:\\.\\d+)?)\\s*Hz").orElse(null);
+        return new Mode(resolution.group(1) + "x" + resolution.group(2), refresh);
+    }
+
+    private static ParsedData parseWmiDesktopMonitors() {
+        ParsedData data = ParsedData.empty();
+        List<Map<String, String>> monitors = WmiSupport.list(WMIClass.WIN32_DESKTOPMONITOR);
+        Map<String, String> controller = WmiSupport.object(WMIClass.WIN32_VIDEOCONTROLLER);
+        String refresh = controller.get("CurrentRefreshRate");
+        int count = 0;
+        for (Map<String, String> monitor : monitors) {
+            data.put("name_" + count, monitor.get("Name"));
+            String width = monitor.get("ScreenWidth");
+            String height = monitor.get("ScreenHeight");
+            if (width != null && height != null) {
+                data.put("current_res_" + count,
+                        HardwareInfoUtils.removeAllSpaces(width + "x" + height));
+            }
+            data.put("current_refresh_rate_" + count, refresh);
+            count++;
+        }
+        data.put("numOfDisplays", String.valueOf(count));
+        return data;
+    }
+
+    private static void applySupportedResolutions(ParsedData data) {
+        int displays = data.getInt("numOfDisplays", 0);
+        if (displays == 0) {
+            return;
+        }
+        Set<String> modes = new LinkedHashSet<>();
+        for (Map<String, String> resolution : WmiSupport.list(
+                WMIClass.CIM_VIDEOCONTROLLERRESOLUTION)) {
+            String width = resolution.get("HorizontalResolution");
+            String height = resolution.get("VerticalResolution");
+            String refresh = resolution.get("RefreshRate");
+            if (width != null && height != null && refresh != null) {
+                modes.add(width + "x" + height + "@" + refresh);
             }
         }
-        return true;
-    }
-
-    private void completeWithDXData(Map<String, String> displayDataMap) {
-        Map<String, String> dxDisplayDataMap = getInfoFromDXDiag();
-
-        for (Map.Entry<String, String> entry : displayDataMap.entrySet()) {
-            if (entry.getValue() == null || entry.getValue().isEmpty()) {
-                entry.setValue(dxDisplayDataMap.get(entry.getKey()));
-            }
+        if (modes.isEmpty()) {
+            return;
+        }
+        String joined = String.join(";", modes);
+        for (int i = 0; i < displays; i++) {
+            data.put("available_res_" + i, joined);
+        }
+        if (displays > 1) {
+            data.warn("Supported resolutions are adapter-wide and may include "
+                    + "modes not supported by every monitor");
         }
     }
 
-    private Map<String, String> getInfoFromDXDiag() {
-        Map<String, String> displayDataMap = new HashMap<>();
+    /**
+     * A display mode.
+     */
+    static final class Mode {
 
-        DirectXInfoLoader directXinfo = DirectXInfoLoader.get;
-        List<Map<String, String>> rawDisplayInfoMap = directXinfo.getDisplayInfo();
+        private final String resolution;
+        private final String refresh;
 
-        int numDevice = 0;
-        for (final Map<String, String> displayInfoMap : rawDisplayInfoMap) {
-            displayDataMap.put("name_" + numDevice, displayInfoMap.get("MonitorName"));
-            displayDataMap.put("current_res_" + numDevice, getResolution(displayInfoMap.get("CurrentMode")));
-            displayDataMap.put("current_refresh_rate_" + numDevice, getRefreshRate(displayInfoMap.get("CurrentMode")));
-
-            numDevice++;
+        /**
+         * @param resolution {@code WIDTHxHEIGHT}
+         * @param refresh    refresh rate in Hz, may be {@code null}
+         */
+        Mode(String resolution, String refresh) {
+            this.resolution = resolution;
+            this.refresh = refresh;
         }
 
-        displayDataMap.put("numOfDisplays", String.valueOf(rawDisplayInfoMap.size()));
-
-        return displayDataMap;
-    }
-
-    private Map<String, String> getInfoFromWin32DesktopMonitor() {
-        Map<String, String> displayDataMap = new HashMap<>();
-        String rawdisplayData
-                = WMI4Java.get().VBSEngine()
-                .properties(Arrays.asList("Name", "ScreenWidth", "ScreenHeight"))
-                .getRawWMIObjectOutput(WMIClass.WIN32_DESKTOPMONITOR);
-        String[] dataStringLines = rawdisplayData.split("\\r?\\n");
-        int numDevice = 0;
-        for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("Name")) {
-                displayDataMap.put("name_" + numDevice, dataLine.split(":", 2)[1]);
-            } else if (dataLine.startsWith("ScreenWidth")) {
-                displayDataMap.put("current_res_" + numDevice, dataLine.split(":", 2)[1]);
-            } else if (dataLine.startsWith("ScreenHeight")) {
-                displayDataMap.put("current_res_" + numDevice,
-                        HardwareInfoUtils.removeAllSpaces(displayDataMap.get("current_res_" + numDevice)
-                                + "x" + dataLine.split(":", 2)[1]));
-                displayDataMap.put("current_refresh_rate_" + numDevice, getCurrentRefreshRate());
-                numDevice++;
-            }
+        String resolution() {
+            return resolution;
         }
 
-        displayDataMap.put("numOfDisplays", String.valueOf(numDevice));
-
-        return displayDataMap;
-    }
-
-    private String getCurrentRefreshRate() {
-        String rawRefresRateData
-                = WMI4Java.get().VBSEngine()
-                .properties(Arrays.asList("CurrentRefreshRate"))
-                .getRawWMIObjectOutput(WMIClass.WIN32_VIDEOCONTROLLER);
-        String[] dataStringLines = rawRefresRateData.split("\\r?\\n");
-
-        return dataStringLines[0].split(":", 2)[1];
-    }
-
-    private void addSupportedResolutions(Map<String, String> displayDataMap) {
-        Set<String> supportedResolutions = new HashSet<>();
-        StringBuilder allSupportedResolutions = new StringBuilder();
-        String rawdisplayData
-                = WMI4Java.get().VBSEngine()
-                .properties(Arrays.asList("HorizontalResolution", "VerticalResolution", "RefreshRate"))
-                .getRawWMIObjectOutput(WMIClass.CIM_VIDEOCONTROLLERRESOLUTION);
-        String[] dataStringLines = rawdisplayData.split("\\r?\\n");
-        String hRes = "";
-        String vRes = "";
-        for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("HorizontalResolution")) {
-                hRes = dataLine.split(":", 2)[1];
-            } else if (dataLine.startsWith("VerticalResolution")) {
-                vRes = dataLine.split(":", 2)[1];
-            } else if (dataLine.startsWith("RefreshRate")) {
-                supportedResolutions.add(
-                        HardwareInfoUtils.removeAllSpaces(hRes + "x" + vRes + "x" + dataLine.split(":", 2)[1]));
-            }
+        String refresh() {
+            return refresh;
         }
-
-        supportedResolutions.stream().forEach((supportedResolution) -> {
-            allSupportedResolutions.append(supportedResolution).append(";");
-        });
-
-        displayDataMap.put("available_res_0", allSupportedResolutions.toString());
+    }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
     }
 
-    private String getResolution(String currentMode) {
-        return HardwareInfoUtils.removeAllSpaces(
-                currentMode.substring(0, currentMode.indexOf("(")));
-    }
-
-    private String getRefreshRate(String currentMode) {
-        return HardwareInfoUtils.extractText(currentMode, "\\) \\((.+?)Hz");
-    }
 }

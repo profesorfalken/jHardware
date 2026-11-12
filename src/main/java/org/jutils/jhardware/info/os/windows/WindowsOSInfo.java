@@ -13,41 +13,51 @@
  */
 package org.jutils.jhardware.info.os.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
-import java.util.Calendar;
 import java.util.Map;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.os.AbstractOSInfo;
+import org.jutils.jhardware.util.WmiDateUtils;
+import org.jutils.jhardware.util.WmiSupport;
 
 /**
- * Information related to Operating System
- *
- * @author Javier Garcia Alonso
+ * Operating-system information from WMI ({@code Win32_OperatingSystem}).
  */
 public final class WindowsOSInfo extends AbstractOSInfo {
 
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> osDataMap
-                = WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM);
-
-        osDataMap.put("Version", osDataMap.get("Version"));
-        osDataMap.put("LastBootTime", normalizeBootUpDate(osDataMap.get("LastBootUpTime")));
-        osDataMap.put("Name", osDataMap.get("Caption"));
-        osDataMap.put("Manufacturer", osDataMap.get("Manufacturer"));
-
-        return osDataMap;
+    protected ParsedData parseInfoData() {
+        Map<String, String> wmi = WmiSupport.object(WMIClass.WIN32_OPERATINGSYSTEM);
+        ParsedData data = parseWmi(wmi);
+        if (data.isEmpty()) {
+            data.warn("WMI class Win32_OperatingSystem returned no data");
+        }
+        return data;
     }
 
-    private static String normalizeBootUpDate(String rawBootUpTime) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, Integer.valueOf(rawBootUpTime.substring(0, 4)));
-        c.set(Calendar.MONTH, Integer.valueOf(rawBootUpTime.substring(4, 6)));
-        c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(rawBootUpTime.substring(6, 8)));
-        c.set(Calendar.HOUR, Integer.valueOf(rawBootUpTime.substring(8, 10)));
-        c.set(Calendar.MINUTE, Integer.valueOf(rawBootUpTime.substring(10, 12)));
-        c.set(Calendar.SECOND, Integer.valueOf(rawBootUpTime.substring(12, 14)));
-        
-        return c.getTime().toString();
+    /**
+     * @param wmi raw WMI properties
+     * @return parsed data
+     */
+    static ParsedData parseWmi(Map<String, String> wmi) {
+        ParsedData data = ParsedData.empty();
+        if (wmi == null || wmi.isEmpty()) {
+            return data;
+        }
+        data.putAll(wmi);
+        data.put("Name", wmi.get("Caption"));
+        data.put("Manufacturer", wmi.get("Manufacturer"));
+        data.put("Version", wmi.get("Version"));
+        data.put("LastBootTime", WmiDateUtils.toIsoDateTime(wmi.get("LastBootUpTime")));
+        if (data.get("Name") == null) {
+            data.warn("The operating-system caption was not reported by WMI");
+        }
+        return data;
     }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
+    }
+
 }

@@ -13,32 +13,60 @@
  */
 package org.jutils.jhardware.info.bios.windows;
 
-import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
 import java.util.Map;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.bios.AbstractBiosInfo;
+import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.WmiDateUtils;
+import org.jutils.jhardware.util.WmiSupport;
 
 /**
- * Information related to BIOS
- * 
- * @author Javier Garcia Alonso
+ * BIOS information from WMI ({@code Win32_BIOS}).
  */
 public final class WindowsBiosInfo extends AbstractBiosInfo {
 
-    /**
-     *
-     * @return
-     */
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> biosDataMap = 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.CIM_BIOSELEMENT);
-
-        biosDataMap.put("Release Date", biosDataMap.get("InstallDate"));
-        biosDataMap.put("Vendor", 
-                biosDataMap.get("Manufacturer"));
-        biosDataMap.put("Version", biosDataMap.get("Version"));
-
-        return biosDataMap;
+    protected ParsedData parseInfoData() {
+        Map<String, String> wmi = WmiSupport.object(WMIClass.WIN32_BIOS);
+        if (wmi.isEmpty()) {
+            wmi = WmiSupport.object(WMIClass.CIM_BIOSELEMENT);
+        }
+        ParsedData data = parseWmi(wmi);
+        if (data.isEmpty()) {
+            data.warn("WMI BIOS classes returned no data");
+        }
+        return data;
     }
+
+    /**
+     * @param wmi raw WMI properties
+     * @return parsed data
+     */
+    static ParsedData parseWmi(Map<String, String> wmi) {
+        ParsedData data = ParsedData.empty();
+        if (wmi == null || wmi.isEmpty()) {
+            return data;
+        }
+        data.putAll(wmi);
+        data.put("Vendor", HardwareInfoUtils.firstNonBlank(
+                wmi.get("Manufacturer"), wmi.get("Vendor")));
+        data.put("Version", HardwareInfoUtils.firstNonBlank(
+                wmi.get("SMBIOSBIOSVersion"), wmi.get("Version")));
+        String releaseDate = HardwareInfoUtils.firstNonBlank(
+                wmi.get("ReleaseDate"), wmi.get("InstallDate"));
+        if (releaseDate != null) {
+            data.put("Release Date", WmiDateUtils.toIsoDate(releaseDate));
+        }
+        if (data.get("Vendor") == null) {
+            data.warn("The BIOS vendor was not reported by WMI");
+        }
+        return data;
+    }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
+    }
+
 }
