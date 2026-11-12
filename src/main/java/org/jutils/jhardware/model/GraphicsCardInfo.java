@@ -1,11 +1,9 @@
 /*
- * Copyright 2016 Javier Garcia Alonso.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,23 +13,31 @@
  */
 package org.jutils.jhardware.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Model that encapsulates graphics card information
- *
- * @author Javier Garcia Alonso
+ * Graphics cards attached to the system.
  */
-public class GraphicsCardInfo implements ComponentInfo {
+public class GraphicsCardInfo extends AbstractComponentInfo {
 
-    List<GraphicsCard> graphicsCards;
+    private static final long serialVersionUID = 1L;
 
+    private ArrayList<GraphicsCard> graphicsCards = new ArrayList<>();
+
+    /**
+     * @return an unmodifiable list of graphics cards, never {@code null}
+     */
     public List<GraphicsCard> getGraphicsCards() {
-        return graphicsCards;
+        return Collections.unmodifiableList(graphicsCards);
     }
 
+    /**
+     * @param graphicsCards cards to store; {@code null} is treated as empty
+     */
     public void setGraphicsCards(List<GraphicsCard> graphicsCards) {
-        this.graphicsCards = graphicsCards;
+        this.graphicsCards = graphicsCards == null
+                ? new ArrayList<>() : new ArrayList<>(graphicsCards);
     }
-
 }

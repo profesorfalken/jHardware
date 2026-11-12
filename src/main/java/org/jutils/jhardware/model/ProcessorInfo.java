@@ -13,14 +13,13 @@
  */
 package org.jutils.jhardware.model;
 
-import java.util.Map;
-
 /**
- * Model that encapsulates processor information
- * 
- * @author Javier Garcia Alonso
+ * Processor (CPU) information.
  */
-public class ProcessorInfo implements ComponentInfo{
+public class ProcessorInfo extends AbstractComponentInfo {
+
+    private static final long serialVersionUID = 1L;
+
     private String vendorId;
     private String family;
     private String model;
@@ -30,8 +29,6 @@ public class ProcessorInfo implements ComponentInfo{
     private String cacheSize;
     private String numCores;
     private String temperature;
-    
-    private Map<String, String> fullInfo;
 
     public String getVendorId() {
         return vendorId;
@@ -73,6 +70,9 @@ public class ProcessorInfo implements ComponentInfo{
         this.stepping = stepping;
     }
 
+    /**
+     * @return current clock speed in MHz, as reported by the platform
+     */
     public String getMhz() {
         return mhz;
     }
@@ -89,6 +89,10 @@ public class ProcessorInfo implements ComponentInfo{
         this.cacheSize = cacheSize;
     }
 
+    /**
+     * @return number of physical cores when it can be computed, otherwise the
+     *         number of logical processors
+     */
     public String getNumCores() {
         return numCores;
     }
@@ -97,19 +101,14 @@ public class ProcessorInfo implements ComponentInfo{
         this.numCores = numCores;
     }
 
+    /**
+     * @return temperature in degrees Celsius, or {@code NOT DETECTED}
+     */
     public String getTemperature() {
         return temperature;
     }
 
     public void setTemperature(String temperature) {
         this.temperature = temperature;
-    }
-
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
-    }
-
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
     }
 }

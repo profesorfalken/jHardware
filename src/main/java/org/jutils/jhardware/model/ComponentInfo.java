@@ -14,11 +14,34 @@
 package org.jutils.jhardware.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
+ * Common contract for every hardware component snapshot.
  *
- * @author Javier Garcia Alonso
+ * <p>Typed getters are provided for the fields that are common across
+ * platforms. The complete, platform-specific payload is available through
+ * {@link #getFullInfo()}. When a platform cannot provide some data, the
+ * corresponding getter is {@code null} (or an empty list) and
+ * {@link #getWarnings()} explains why.</p>
  */
 public interface ComponentInfo extends Serializable {
-    
+
+    /**
+     * @return an unmodifiable map with every raw key/value pair retrieved for
+     *         this component; never {@code null}
+     */
+    default Map<String, String> getFullInfo() {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * @return an unmodifiable list of non-fatal problems found while retrieving
+     *         the information; never {@code null}
+     */
+    default List<String> getWarnings() {
+        return Collections.emptyList();
+    }
 }

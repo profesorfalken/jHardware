@@ -13,18 +13,16 @@
  */
 package org.jutils.jhardware.model;
 
-import java.util.Map;
-
 /**
- *
- * @author Javier Garcia Alonso
+ * BIOS/UEFI information.
  */
-public class BiosInfo implements ComponentInfo {
+public class BiosInfo extends AbstractComponentInfo {
+
+    private static final long serialVersionUID = 1L;
+
     private String date;
     private String manufacturer;
     private String version;
-   
-    private Map<String, String> fullInfo;
 
     public String getDate() {
         return date;
@@ -49,13 +47,4 @@ public class BiosInfo implements ComponentInfo {
     public void setVersion(String version) {
         this.version = version;
     }
-    
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
-    }
-
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
-    }
-    
 }

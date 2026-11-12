@@ -13,18 +13,17 @@
  */
 package org.jutils.jhardware.model;
 
-import java.util.Map;
-
 /**
- *
- * @author Javier Garcia Alonso
+ * Operating-system information.
  */
-public class OSInfo implements ComponentInfo {
+public class OSInfo extends AbstractComponentInfo {
+
+    private static final long serialVersionUID = 1L;
+
     private String version;
     private String lastBootTime;
     private String name;
     private String manufacturer;
-    private Map<String, String> fullInfo;
 
     public String getVersion() {
         return version;
@@ -34,6 +33,9 @@ public class OSInfo implements ComponentInfo {
         this.version = version;
     }
 
+    /**
+     * @return last boot time as an ISO-8601 string when it can be determined
+     */
     public String getLastBootTime() {
         return lastBootTime;
     }
@@ -57,13 +59,4 @@ public class OSInfo implements ComponentInfo {
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
     }
-    
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
-    }
-
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
-    }
-    
 }

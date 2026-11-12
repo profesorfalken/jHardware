@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,17 @@
 package org.jutils.jhardware.model;
 
 /**
- *
- * @author Javier Garcia Alonso
+ * A single network interface.
  */
-public class NetworkInterfaceInfo implements ComponentInfo{
+public class NetworkInterfaceInfo implements ComponentInfo {
+
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String type;
     private String ipv4;
     private String ipv6;
+    private String macAddress;
     private String receivedPackets;
     private String transmittedPackets;
     private String receivedBytes;
@@ -35,6 +38,11 @@ public class NetworkInterfaceInfo implements ComponentInfo{
         this.name = name;
     }
 
+    /**
+     * @return a coarse type: {@code loopback}, {@code wireless},
+     *         {@code bridge}, {@code point-to-point}, {@code virtual} or
+     *         {@code ethernet}
+     */
     public String getType() {
         return type;
     }
@@ -57,6 +65,14 @@ public class NetworkInterfaceInfo implements ComponentInfo{
 
     public void setIpv6(String ipv6) {
         this.ipv6 = ipv6;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
     public String getReceivedPackets() {
@@ -89,5 +105,5 @@ public class NetworkInterfaceInfo implements ComponentInfo{
 
     public void setTransmittedBytes(String transmittedBytes) {
         this.transmittedBytes = transmittedBytes;
-    }    
+    }
 }

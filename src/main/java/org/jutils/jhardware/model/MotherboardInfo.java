@@ -13,19 +13,16 @@
  */
 package org.jutils.jhardware.model;
 
-import java.util.Map;
-
 /**
- *
- * @author Javier Garcia Alonso
+ * Motherboard (baseboard) information.
  */
-public class MotherboardInfo implements ComponentInfo {
+public class MotherboardInfo extends AbstractComponentInfo {
+
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private String manufacturer;
     private String version;
-
-    private Map<String, String> fullInfo;
 
     public String getName() {
         return name;
@@ -43,14 +40,6 @@ public class MotherboardInfo implements ComponentInfo {
         this.manufacturer = manufacturer;
     }
 
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
-    }
-
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
-    }
-
     public String getVersion() {
         return version;
     }
@@ -58,5 +47,4 @@ public class MotherboardInfo implements ComponentInfo {
     public void setVersion(String version) {
         this.version = version;
     }
-
 }

@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,32 @@
  */
 package org.jutils.jhardware.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- *
- * @author Javier Garcia Alonso
+ * Network interfaces and their addresses/statistics.
  */
-public class NetworkInfo implements ComponentInfo {
-    private List<NetworkInterfaceInfo> networkInterfaces;
+public class NetworkInfo extends AbstractComponentInfo {
 
+    private static final long serialVersionUID = 1L;
+
+    private ArrayList<NetworkInterfaceInfo> networkInterfaces = new ArrayList<>();
+
+    /**
+     * @return an unmodifiable list of interfaces, never {@code null}
+     */
     public List<NetworkInterfaceInfo> getNetworkInterfaces() {
-        return networkInterfaces;
+        return Collections.unmodifiableList(networkInterfaces);
     }
 
+    /**
+     * @param networkInterfaces interfaces to store; {@code null} is treated as
+     *                          an empty list
+     */
     public void setNetworkInterfaces(List<NetworkInterfaceInfo> networkInterfaces) {
-        this.networkInterfaces = networkInterfaces;
+        this.networkInterfaces = networkInterfaces == null
+                ? new ArrayList<>() : new ArrayList<>(networkInterfaces);
     }
-    
 }

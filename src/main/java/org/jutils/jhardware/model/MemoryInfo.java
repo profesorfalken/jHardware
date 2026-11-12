@@ -13,18 +13,23 @@
  */
 package org.jutils.jhardware.model;
 
-import java.util.Map;
-
 /**
+ * Physical memory information.
  *
- * @author Javier Garcia Alonso
+ * <p>The legacy string fields keep the raw platform representation. The
+ * {@code *Bytes} fields provide a normalized value in bytes and are
+ * {@code null} when it cannot be computed.</p>
  */
-public class MemoryInfo implements ComponentInfo {
+public class MemoryInfo extends AbstractComponentInfo {
+
+    private static final long serialVersionUID = 1L;
+
     private String totalMemory;
     private String freeMemory;
     private String availableMemory;
-   
-    private Map<String, String> fullInfo;
+    private Long totalMemoryBytes;
+    private Long freeMemoryBytes;
+    private Long availableMemoryBytes;
 
     public String getTotalMemory() {
         return totalMemory;
@@ -50,13 +55,27 @@ public class MemoryInfo implements ComponentInfo {
         this.availableMemory = availableMemory;
     }
 
-    public Map<String, String> getFullInfo() {
-        return fullInfo;
+    public Long getTotalMemoryBytes() {
+        return totalMemoryBytes;
     }
 
-    public void setFullInfo(Map<String, String> fullInfo) {
-        this.fullInfo = fullInfo;
+    public void setTotalMemoryBytes(Long totalMemoryBytes) {
+        this.totalMemoryBytes = totalMemoryBytes;
     }
-    
-    
+
+    public Long getFreeMemoryBytes() {
+        return freeMemoryBytes;
+    }
+
+    public void setFreeMemoryBytes(Long freeMemoryBytes) {
+        this.freeMemoryBytes = freeMemoryBytes;
+    }
+
+    public Long getAvailableMemoryBytes() {
+        return availableMemoryBytes;
+    }
+
+    public void setAvailableMemoryBytes(Long availableMemoryBytes) {
+        this.availableMemoryBytes = availableMemoryBytes;
+    }
 }

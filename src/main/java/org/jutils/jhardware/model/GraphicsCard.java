@@ -1,11 +1,9 @@
 /*
- * Copyright 2016 javier.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +13,14 @@
  */
 package org.jutils.jhardware.model;
 
+import java.io.Serializable;
+
 /**
- *
- * @author javier
+ * A single graphics card.
  */
-public class GraphicsCard {
+public class GraphicsCard implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private String manufacturer;
@@ -69,6 +70,9 @@ public class GraphicsCard {
         this.deviceType = deviceType;
     }
 
+    /**
+     * @return temperature in degrees Celsius, when available
+     */
     public String getTemperature() {
         return temperature;
     }
@@ -77,6 +81,9 @@ public class GraphicsCard {
         this.temperature = temperature;
     }
 
+    /**
+     * @return fan speed as reported by the platform, when available
+     */
     public String getFanSpeed() {
         return fanSpeed;
     }
@@ -84,5 +91,4 @@ public class GraphicsCard {
     public void setFanSpeed(String fanSpeed) {
         this.fanSpeed = fanSpeed;
     }
-
 }

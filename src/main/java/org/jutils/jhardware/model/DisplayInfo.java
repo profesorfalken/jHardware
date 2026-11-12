@@ -13,20 +13,31 @@
  */
 package org.jutils.jhardware.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- *
- * @author Javier Garcia Alonso
+ * Display devices attached to the system.
  */
-public class DisplayInfo implements ComponentInfo {
-    List<Display> displayDevices;
+public class DisplayInfo extends AbstractComponentInfo {
 
+    private static final long serialVersionUID = 1L;
+
+    private ArrayList<Display> displayDevices = new ArrayList<>();
+
+    /**
+     * @return an unmodifiable list of displays, never {@code null}
+     */
     public List<Display> getDisplayDevices() {
-        return displayDevices;
+        return Collections.unmodifiableList(displayDevices);
     }
 
+    /**
+     * @param displayDevices displays to store; {@code null} is treated as empty
+     */
     public void setDisplayDevices(List<Display> displayDevices) {
-        this.displayDevices = displayDevices;
+        this.displayDevices = displayDevices == null
+                ? new ArrayList<>() : new ArrayList<>(displayDevices);
     }
 }
