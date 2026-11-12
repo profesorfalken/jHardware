@@ -13,6 +13,7 @@
  */
 package org.jutils.jhardware.info;
 
+import org.jutils.jhardware.UnsupportedOperatingSystemException;
 import org.jutils.jhardware.info.bios.unix.UnixBiosInfo;
 import org.jutils.jhardware.info.bios.windows.WindowsBiosInfo;
 import org.jutils.jhardware.info.display.unix.UnixDisplayInfo;
@@ -29,32 +30,60 @@ import org.jutils.jhardware.info.os.unix.UnixOSInfo;
 import org.jutils.jhardware.info.os.windows.WindowsOSInfo;
 import org.jutils.jhardware.info.processor.unix.UnixProcessorInfo;
 import org.jutils.jhardware.info.processor.windows.WindowsProcessorInfo;
-import org.jutils.jhardware.util.OSDetector;
+import org.jutils.jhardware.util.CommandRunner;
+import org.jutils.jhardware.util.OsFamily;
+import org.jutils.jhardware.util.SystemCommandRunner;
 
 /**
- * Factory class to get the right information
- *
- * @author Javier Garcia Alonso
+ * Selects the implementation for the current operating system.
  */
 public class HardwareFactory {
 
-    /**
-     * Hide constructor
-     */
     private HardwareFactory() {
     }
 
+    /**
+     * @param type component type
+     * @return the implementation for the current OS
+     * @throws UnsupportedOperatingSystemException when the OS is not supported
+     */
     public static HardwareInfo get(InfoType type) {
-        if (OSDetector.isWindows()) {
-            return getWindowsInfo(type);
-        } else if (OSDetector.isUnix()) {
-            return getUnixInfo(type);
-        } else {
-            throw new UnsupportedOperationException("Your Operating System is not supported");
+        return get(type, OsFamily.current(), SystemCommandRunner.defaultRunner());
+    }
+
+    /**
+     * @param type component type
+     * @param os   target family
+     * @param runner command runner used by implementations that need it
+     * @return the implementation
+     * @throws UnsupportedOperatingSystemException when the OS is not supported
+     */
+    public static HardwareInfo get(InfoType type, OsFamily os, CommandRunner runner) {
+        if (type == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+        OsFamily family = os == null ? OsFamily.current() : os;
+        CommandRunner commandRunner = runner == null
+                ? SystemCommandRunner.defaultRunner() : runner;
+        switch (family) {
+            case WINDOWS:
+                return windows(type, commandRunner);
+            case LINUX:
+                return linux(type, commandRunner);
+            case MACOS:
+                throw new UnsupportedOperatingSystemException(
+                        "macOS is not supported by jHardware 1.0.0; supported systems "
+                        + "are Linux and Windows");
+            case UNKNOWN:
+                throw new UnsupportedOperatingSystemException(
+                        "Unsupported operating system: " + System.getProperty("os.name"));
+            default:
+                throw new UnsupportedOperatingSystemException(
+                        "Unsupported operating system family: " + family);
         }
     }
 
-    private static HardwareInfo getWindowsInfo(InfoType type) {
+    private static HardwareInfo windows(InfoType type, CommandRunner runner) {
         switch (type) {
             case PROCESSOR:
                 return new WindowsProcessorInfo();
@@ -69,34 +98,34 @@ public class HardwareFactory {
             case NETWORK:
                 return new WindowsNetworkInfo();
             case DISPLAY:
-                return new WindowsDisplayInfo();
-             case GRAPHICSCARD:
-                return new WindowsGraphicsCardInfo();
+                return new WindowsDisplayInfo(runner);
+            case GRAPHICSCARD:
+                return new WindowsGraphicsCardInfo(runner);
             default:
-                throw new IllegalArgumentException("Type of hardware not supported: " + type);
+                throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
 
-    private static HardwareInfo getUnixInfo(InfoType type) {
+    private static HardwareInfo linux(InfoType type, CommandRunner runner) {
         switch (type) {
             case PROCESSOR:
                 return new UnixProcessorInfo();
             case MEMORY:
                 return new UnixMemoryInfo();
             case BIOS:
-                return new UnixBiosInfo();
+                return new UnixBiosInfo(runner);
             case MOTHERBOARD:
-                return new UnixMotherboardInfo();
+                return new UnixMotherboardInfo(runner);
             case OS:
-                return new UnixOSInfo();
+                return new UnixOSInfo(runner);
             case NETWORK:
                 return new UnixNetworkInfo();
             case DISPLAY:
-                return new UnixDisplayInfo();
+                return new UnixDisplayInfo(runner);
             case GRAPHICSCARD:
-                return new UnixGraphicsCardInfo();
+                return new UnixGraphicsCardInfo(runner);
             default:
-                throw new IllegalArgumentException("Type of hardware not supported: " + type);
+                throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
 }

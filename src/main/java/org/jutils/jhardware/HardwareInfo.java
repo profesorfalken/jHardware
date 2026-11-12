@@ -13,11 +13,9 @@
  */
 package org.jutils.jhardware;
 
-import java.util.Map;
-import java.util.Set;
-import org.jutils.jhardware.info.HardwareFactory;
 import org.jutils.jhardware.info.InfoType;
 import org.jutils.jhardware.model.BiosInfo;
+import org.jutils.jhardware.model.ComponentInfo;
 import org.jutils.jhardware.model.DisplayInfo;
 import org.jutils.jhardware.model.GraphicsCardInfo;
 import org.jutils.jhardware.model.MemoryInfo;
@@ -27,111 +25,120 @@ import org.jutils.jhardware.model.OSInfo;
 import org.jutils.jhardware.model.ProcessorInfo;
 
 /**
- * Static class that allows to query for Hardware details.<p>
- * Each method return the information related with a different component 
- * (CPU, memory, motherboard....). There are some important data that comes
- * typed in the response. This is the information that is common in different 
- * system. The complete and specific information is returned in a Map.
- * 
- * @author Javier Garcia Alonso
+ * Entry point for hardware snapshots.
+ *
+ * <p>The static methods use a shared {@link HardwareInfoService} configured
+ * for the current machine. Applications that need to inject a command runner,
+ * target a different OS family or run tests should instantiate
+ * {@link HardwareInfoService} directly.</p>
+ *
+ * <p>Every snapshot is a one-shot read: no values are cached. Snapshot objects
+ * expose the raw payload in {@link ComponentInfo#getFullInfo()} and any
+ * non-fatal problem in {@link ComponentInfo#getWarnings()}.</p>
  */
 public class HardwareInfo {
-    
-    /**
-     * Hide constructor
-     */
+
+    private static final HardwareInfoService SERVICE = new HardwareInfoService();
+
     private HardwareInfo() {
     }
-    
+
     /**
-     * Gets information related with CPU
-     * 
-     * @return object with typed common data and a map with full data
+     * @return the shared service
+     */
+    public static HardwareInfoService getService() {
+        return SERVICE;
+    }
+
+    /**
+     * @return CPU information
      */
     public static ProcessorInfo getProcessorInfo() {
-        return (ProcessorInfo)HardwareFactory.get(InfoType.PROCESSOR).getInfo();
+        return SERVICE.getProcessorInfo();
     }
-    
+
     /**
-     * Gets information related with memory
-     * 
-     * @return object with typed common data and a map with full data
+     * @return physical memory information
      */
     public static MemoryInfo getMemoryInfo() {
-        return (MemoryInfo)HardwareFactory.get(InfoType.MEMORY).getInfo();
+        return SERVICE.getMemoryInfo();
     }
-    
+
     /**
-     * Gets information related with BIOS
-     * 
-     * @return object with typed common data and a map with full data
+     * @return BIOS information
      */
     public static BiosInfo getBiosInfo() {
-        return (BiosInfo)HardwareFactory.get(InfoType.BIOS).getInfo();
+        return SERVICE.getBiosInfo();
     }
-    
+
     /**
-     * Gets information related with the motherboard
-     * 
-     * @return object with typed common data and a map with full data
+     * @return motherboard information
      */
     public static MotherboardInfo getMotherboardInfo() {
-        return (MotherboardInfo)HardwareFactory.get(InfoType.MOTHERBOARD).getInfo();
+        return SERVICE.getMotherboardInfo();
     }
-    
+
     /**
-     * Gets information related with the Operating System
-     * 
-     * @return object with typed common data and a map with full data
+     * @return operating-system information
      */
     public static OSInfo getOSInfo() {
-        return (OSInfo)HardwareFactory.get(InfoType.OS).getInfo();
+        return SERVICE.getOSInfo();
     }
-    
+
     /**
-     * Gets information related with the Network
-     * 
-     * @return object with typed common data and a map with full data
+     * @return network interfaces
      */
     public static NetworkInfo getNetworkInfo() {
-        return (NetworkInfo)HardwareFactory.get(InfoType.NETWORK).getInfo();
+        return SERVICE.getNetworkInfo();
     }
-    
+
     /**
-     * Gets information related with the Display
-     * 
-     * @return object with typed common data and a map with full data
+     * @return connected displays
      */
     public static DisplayInfo getDisplayInfo() {
-        return (DisplayInfo)HardwareFactory.get(InfoType.DISPLAY).getInfo();
+        return SERVICE.getDisplayInfo();
     }
-    
+
     /**
-     * Gets information related with the Graphics Cards
-     * 
-     * @return object with typed common data and a map with full data
+     * @return graphics cards
      */
     public static GraphicsCardInfo getGraphicsCardInfo() {
-        return (GraphicsCardInfo)HardwareFactory.get(InfoType.GRAPHICSCARD).getInfo();
+        return SERVICE.getGraphicsCardInfo();
     }
-    
-    public static void main(String [] args) {
-        ProcessorInfo info = HardwareInfo.getProcessorInfo();
 
-        System.out.println("Cache size: " + info.getCacheSize());        
-        System.out.println("Family: " + info.getFamily());
-        System.out.println("Speed (Mhz): " + info.getMhz());
-        System.out.println("Model: " + info.getModel());
-        System.out.println("Model name: " + info.getModelName());
-        System.out.println("Number of cores: " + info.getNumCores());
-        System.out.println("Stepping: " + info.getStepping());
-        System.out.println("Temperature: " + info.getTemperature());
-        System.out.println("Vendor Id: " + info.getVendorId());
-        
-        Set<Map.Entry<String, String>> fullInfos = info.getFullInfo().entrySet();
-        
-        fullInfos.stream().forEach((fullInfo) -> {
-            System.out.println(fullInfo.getKey() + ": " + fullInfo.getValue());
-        });
+    /**
+     * @param type component type
+     * @return the component snapshot
+     */
+    public static ComponentInfo getInfo(InfoType type) {
+        return SERVICE.getInfo(type);
     }
+
+    /**
+     * Prints a full report to standard output.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        HardwareInfoService service = new HardwareInfoService();
+        print(service.getProcessorInfo());
+        print(service.getMemoryInfo());
+        print(service.getBiosInfo());
+        print(service.getMotherboardInfo());
+        print(service.getOSInfo());
+        print(service.getNetworkInfo());
+        print(service.getDisplayInfo());
+        print(service.getGraphicsCardInfo());
+    }
+
+    private static void print(ComponentInfo info) {
+        System.out.println("=== " + info.getClass().getSimpleName() + " ===");
+        for (String warning : info.getWarnings()) {
+            System.out.println("WARN: " + warning);
+        }
+        info.getFullInfo().forEach((key, value) ->
+                System.out.println(key + ": " + value));
+        System.out.println();
+    }
+
 }

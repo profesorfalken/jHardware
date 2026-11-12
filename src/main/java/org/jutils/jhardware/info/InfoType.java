@@ -14,9 +14,7 @@
 package org.jutils.jhardware.info;
 
 /**
- * The type of information to retrieve
- * 
- * @author Javier Garcia Alonso
+ * The type of information to retrieve.
  */
 public enum InfoType {
     PROCESSOR,
@@ -26,5 +24,5 @@ public enum InfoType {
     OS,
     NETWORK,
     DISPLAY,
-    GRAPHICSCARD;
+    GRAPHICSCARD
 }
