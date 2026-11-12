@@ -17,46 +17,84 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.jutils.jhardware.info.HardwareInfo;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.model.Display;
 import org.jutils.jhardware.model.DisplayInfo;
 
 /**
- * Information related to Displays
- * 
- * @author Javier Garcia Alonso
+ * Base class for display providers.
  */
-public abstract class AbstractDisplayInfo implements HardwareInfo { 
+public abstract class AbstractDisplayInfo implements HardwareInfo {
 
-    /**
-     *
-     * @return
-     */
     @Override
     public DisplayInfo getInfo() {
-        return buildFromDataMap(parseInfo());
+        return build(parseInfoData());
     }
-    
+
+    /**
+     * Legacy parsing hook.
+     *
+     * @return raw display values
+     * @deprecated override {@link #parseInfoData()} instead
+     */
+    @Deprecated
     protected abstract Map<String, String> parseInfo();
-    
+
+    /**
+     * New parsing hook. The default implementation adapts the legacy
+     * {@link #parseInfo()} method.
+     *
+     * @return parsed data
+     */
+    protected ParsedData parseInfoData() {
+        return ParsedData.empty().putAll(parseInfo());
+    }
+
+    /**
+     * Legacy model builder.
+     *
+     * @param dataMap raw values
+     * @return the model
+     * @deprecated use {@link #build(ParsedData)}
+     */
+    @Deprecated
     protected DisplayInfo buildFromDataMap(Map<String, String> dataMap) {
+        ParsedData safe = ParsedData.empty().putAll(dataMap);
         DisplayInfo info = new DisplayInfo();
-        
-        List<Display> displayList = new ArrayList<>();
-        if (dataMap != null && !dataMap.isEmpty()) {
-            int numOfDisplays = Integer.parseInt(dataMap.get("numOfDisplays"));
-            for (int i = 0; i < numOfDisplays; i++) {
-                Display display = new Display();
-                
-                display.setName(dataMap.get("name_" + i));
-                display.setCurrentResolution(dataMap.get("current_res_" + i));
-                display.setRefreshRate(dataMap.get("current_refresh_rate_" + i));                
-                display.setSupportedResolutions(dataMap.get("available_res_" + i).split(";"));
-                
-                displayList.add(display);
+        info.setFullInfo(safe.values());
+
+        int count = safe.getInt("numOfDisplays", 0);
+        List<Display> displays = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Display display = new Display();
+            display.setName(safe.get("name_" + i));
+            display.setCurrentResolution(safe.get("current_res_" + i));
+            display.setRefreshRate(safe.get("current_refresh_rate_" + i));
+            display.setSupportedResolutions(splitModes(safe.get("available_res_" + i)));
+            displays.add(display);
+        }
+        info.setDisplayDevices(displays);
+        return info;
+    }
+
+    protected DisplayInfo build(ParsedData data) {
+        ParsedData safe = data == null ? ParsedData.empty() : data;
+        DisplayInfo info = buildFromDataMap(safe.values());
+        info.setFullInfo(safe.values());
+        info.setWarnings(safe.warnings());
+        return info;
+    }
+
+    private static String[] splitModes(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return new String[0];
+        }
+        List<String> modes = new ArrayList<>();
+        for (String mode : raw.split(";")) {
+            if (!mode.trim().isEmpty()) {
+                modes.add(mode.trim());
             }
         }
-        info.setDisplayDevices(displayList);
-        
-        return info;
+        return modes.toArray(new String[0]);
     }
 }

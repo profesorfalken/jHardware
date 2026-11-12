@@ -15,37 +15,62 @@ package org.jutils.jhardware.info.os;
 
 import java.util.Map;
 import org.jutils.jhardware.info.HardwareInfo;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.model.OSInfo;
 
 /**
- * Information related to Operating System
- * 
- * @author Javier Garcia Alonso
+ * Base class for operating-system providers.
  */
-public abstract class AbstractOSInfo implements HardwareInfo { 
+public abstract class AbstractOSInfo implements HardwareInfo {
 
-    /**
-     *
-     * @return
-     */
     @Override
     public OSInfo getInfo() {
-        return buildFromDataMap(parseInfo());
+        return build(parseInfoData());
     }
-    
+
+    /**
+     * Legacy parsing hook.
+     *
+     * @return raw OS values
+     * @deprecated override {@link #parseInfoData()} instead
+     */
+    @Deprecated
     protected abstract Map<String, String> parseInfo();
-    
+
+    /**
+     * New parsing hook. The default implementation adapts the legacy
+     * {@link #parseInfo()} method.
+     *
+     * @return parsed data
+     */
+    protected ParsedData parseInfoData() {
+        return ParsedData.empty().putAll(parseInfo());
+    }
+
+    /**
+     * Legacy model builder.
+     *
+     * @param dataMap raw values
+     * @return the model
+     * @deprecated use {@link #build(ParsedData)}
+     */
+    @Deprecated
     protected OSInfo buildFromDataMap(Map<String, String> dataMap) {
+        ParsedData safe = ParsedData.empty().putAll(dataMap);
         OSInfo info = new OSInfo();
-        info.setFullInfo(dataMap);
-        
-        if (dataMap != null && !dataMap.isEmpty()) {
-            info.setName(dataMap.get("Name"));
-            info.setManufacturer(dataMap.get("Manufacturer"));
-            info.setVersion(dataMap.get("Version"));
-            info.setLastBootTime(dataMap.get("LastBootTime"));
-        }
-        
+        info.setFullInfo(safe.values());
+        info.setName(safe.get("Name"));
+        info.setManufacturer(safe.get("Manufacturer"));
+        info.setVersion(safe.get("Version"));
+        info.setLastBootTime(safe.get("LastBootTime"));
+        return info;
+    }
+
+    protected OSInfo build(ParsedData data) {
+        ParsedData safe = data == null ? ParsedData.empty() : data;
+        OSInfo info = buildFromDataMap(safe.values());
+        info.setFullInfo(safe.values());
+        info.setWarnings(safe.warnings());
         return info;
     }
 }
