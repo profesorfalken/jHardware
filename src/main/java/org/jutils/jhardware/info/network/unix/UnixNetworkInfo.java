@@ -13,73 +13,37 @@
  */
 package org.jutils.jhardware.info.network.unix;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.jutils.jhardware.info.network.AbstractNetworkInfo;
-import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.model.NetworkInfo;
+import org.jutils.jhardware.util.NetworkInfoCollector;
 
 /**
- * Information related to Network
- *
- * @author Javier Garcia Alonso
+ * Linux network information from the JDK and sysfs traffic counters.
  */
-public final class UnixNetworkInfo extends AbstractNetworkInfo {        
+public final class UnixNetworkInfo extends AbstractNetworkInfo {
 
-    private static String getNetworkData() {
-        return HardwareInfoUtils.executeCommand("ifconfig", "-a");
+    private static final Path DEFAULT_SYS_CLASS_NET = Paths.get("/sys/class/net");
+
+    private final Path sysClassNet;
+
+    public UnixNetworkInfo() {
+        this(DEFAULT_SYS_CLASS_NET);
+    }
+
+    UnixNetworkInfo(Path sysClassNet) {
+        this.sysClassNet = sysClassNet == null ? DEFAULT_SYS_CLASS_NET : sysClassNet;
     }
 
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> networkDataMap = new HashMap<>();
-
-        String networkData = getNetworkData();
-        
-        if (networkData != null) {
-            String[] dataStringLines = networkData.split("\\r?\\n");
-
-            int count = 0;
-            for (final String dataLine : dataStringLines) {
-                if (!dataLine.startsWith(" ")) {
-                    count++;
-                    networkDataMap.put("interface_" + count, HardwareInfoUtils.extractText(dataLine, "([^\\s]+)"));
-                    networkDataMap.put("type_" + count, HardwareInfoUtils.extractText(dataLine, "Link encap:(.+?)  "));
-                } else {
-                    updateNetworkData(networkDataMap, count, dataLine);
-                }
-            }
-            networkDataMap.put("interfacesLength", String.valueOf(count));
-        }
-
-        return networkDataMap;
+    protected NetworkInfo parseNetworkInfo() {
+        return build(NetworkInfoCollector.collect(sysClassNet));
+    }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return NetworkInfoCollector.toMap(parseNetworkInfo().getNetworkInterfaces());
     }
 
-    private static void updateNetworkData(Map<String, String> networkDataMap, int count, String dataLine) {
-        String lineType = HardwareInfoUtils.extractText(dataLine, "([^\\s]+)");
-        if (null != lineType) {
-            switch (lineType) {
-                case "inet":
-                    networkDataMap.put("ipv4_" + count, HardwareInfoUtils.extractText(dataLine, "addr:(.+?) "));
-                    break;
-                case "inet6":
-                    networkDataMap.put("ipv6_" + count, HardwareInfoUtils.extractText(dataLine, "addr:(.+?) "));
-                    break;
-                case "RX":
-                    if (dataLine.trim().startsWith("RX packets")) {
-                        networkDataMap.put("received_packets_" + count, HardwareInfoUtils.extractText(dataLine, "packets:(.+?) "));
-                    } else {
-                        networkDataMap.put("received_bytes_" + count, HardwareInfoUtils.extractText(dataLine, "RX bytes:(.+?) "));
-                        networkDataMap.put("transmitted_bytes_" + count, HardwareInfoUtils.extractText(dataLine, "TX bytes:(.+?) "));
-                    }
-                    break;
-                case "TX":
-                    networkDataMap.put("transmitted_packets_" + count, HardwareInfoUtils.extractText(dataLine, "packets:(.+?) "));
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    
 }

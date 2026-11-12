@@ -13,58 +13,84 @@
  */
 package org.jutils.jhardware.info.motherboard.unix;
 
-import java.util.HashMap;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.motherboard.AbstractMotherboardInfo;
+import org.jutils.jhardware.util.CommandResult;
+import org.jutils.jhardware.util.CommandRunner;
+import org.jutils.jhardware.util.DmiOutputParser;
 import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.SystemCommandRunner;
 
 /**
- * Information related to Motherboard
- *
- * @author Javier Garcia Alonso
+ * Motherboard information from the DMI sysfs files, with an optional
+ * {@code dmidecode --type 2} fallback.
  */
 public final class UnixMotherboardInfo extends AbstractMotherboardInfo {
 
-    private static final String DMIPATH = "/sys/devices/virtual/dmi/id/";
+    private static final Path DEFAULT_DMI_ROOT = Paths.get("/sys/class/dmi/id");
 
-    private static String getMotherboardData() {
-        String fullData = "";
-        if (HardwareInfoUtils.isSudo()) {
-            fullData += HardwareInfoUtils.executeCommand("sudo", "dmidecode", "--type", "2");
-        } else {
-            fullData += "\tProduct Name: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "board_name");
-            fullData += "\tVendor: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "board_vendor");
-            fullData += "\tVersion: " + HardwareInfoUtils.executeCommand("cat", DMIPATH + "board_version");
-        }
+    private final Path dmiRoot;
+    private final CommandRunner runner;
 
-        return fullData;
+    public UnixMotherboardInfo() {
+        this(DEFAULT_DMI_ROOT, SystemCommandRunner.defaultRunner());
+    }
+
+    public UnixMotherboardInfo(CommandRunner runner) {
+        this(DEFAULT_DMI_ROOT, runner);
+    }
+
+    UnixMotherboardInfo(Path dmiRoot, CommandRunner runner) {
+        this.dmiRoot = dmiRoot == null ? DEFAULT_DMI_ROOT : dmiRoot;
+        this.runner = runner == null ? SystemCommandRunner.defaultRunner() : runner;
     }
 
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> motherboardDataMap = new HashMap<>();
-        String[] dataStringLines = getMotherboardData().split("\\r?\\n");
+    protected ParsedData parseInfoData() {
+        ParsedData data = ParsedData.empty();
+        read(data, "board_name", "Product Name");
+        read(data, "board_vendor", "Vendor");
+        read(data, "board_version", "Version");
 
-        for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("\t")) {
-                String[] dataStringInfo = dataLine.split(":");
-                if (dataStringInfo.length == 2) {
-                    motherboardDataMap.put(dataStringInfo[0].trim(), dataStringInfo[1].trim());
-                } else if (dataStringInfo.length == 1 && "\tFeatures".equals(dataStringInfo[0])) {                    
-                    motherboardDataMap.put(dataStringInfo[0].trim(), getFeatures(dataStringLines));
-                }
+        boolean missing = data.get("Product Name") == null
+                || data.get("Vendor") == null
+                || data.get("Version") == null;
+        if (missing) {
+            CommandResult result = runner.run("dmidecode", "--type", "2");
+            if (result.isSuccess() && !result.stdout().trim().isEmpty()) {
+                Map<String, String> values = DmiOutputParser.parse(result.stdout());
+                data.putAll(values);
+                data.put("Vendor", HardwareInfoUtils.firstNonBlank(
+                        data.get("Vendor"), values.get("Manufacturer"), values.get("Vendor")));
+                data.put("Product Name", HardwareInfoUtils.firstNonBlank(
+                        data.get("Product Name"), values.get("Product Name"),
+                        values.get("Product")));
+                data.put("Version", HardwareInfoUtils.firstNonBlank(
+                        data.get("Version"), values.get("Version")));
+            } else if (data.isEmpty()) {
+                data.warn("Motherboard information unavailable: DMI files are not "
+                        + "readable and dmidecode could not be executed without privileges");
+            } else {
+                data.warn("Some motherboard fields are not available without privileges");
             }
         }
-        return motherboardDataMap;
+        if (data.isEmpty()) {
+            data.warn("No motherboard information could be retrieved");
+        }
+        return data;
     }
 
-    private static String getFeatures(String[] dataStringLines) {
-        StringBuilder features = new StringBuilder();
-        for (final String characteristicsLine : dataStringLines) {
-            if (characteristicsLine.trim().length() > 0 && characteristicsLine.startsWith("\t\t")) {
-                features.append(characteristicsLine.trim()).append("\n");
-            }
-        }
-        return features.toString();
+    private void read(ParsedData data, String fileName, String key) {
+        HardwareInfoUtils.readValue(dmiRoot.resolve(fileName))
+                .ifPresent(value -> data.put(key, value));
     }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
+    }
+
 }

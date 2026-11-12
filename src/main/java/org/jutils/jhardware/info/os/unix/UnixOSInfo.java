@@ -13,101 +13,145 @@
  */
 package org.jutils.jhardware.info.os.unix;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Optional;
+import org.jutils.jhardware.info.ParsedData;
 import org.jutils.jhardware.info.os.AbstractOSInfo;
+import org.jutils.jhardware.util.CommandResult;
+import org.jutils.jhardware.util.CommandRunner;
 import org.jutils.jhardware.util.HardwareInfoUtils;
+import org.jutils.jhardware.util.SystemCommandRunner;
 
 /**
- * Information related to Operating System
+ * Operating-system information for Linux.
  *
- * @author Javier Garcia Alonso
+ * <p>{@code /etc/os-release} is the primary source; {@code lsb_release} is
+ * only a fallback for old distributions. The boot time comes from
+ * {@code /proc/stat} instead of the fragile {@code last -x} output.</p>
  */
 public final class UnixOSInfo extends AbstractOSInfo {
 
-    private static final String OS_RELEASE = "/etc/os-release";
-    private static final String LINE_BREAK_REGEX = "\\r?\\n";
+    private static final Path DEFAULT_OS_RELEASE = Paths.get("/etc/os-release");
+    private static final Path DEFAULT_PROC_STAT = Paths.get("/proc/stat");
 
-    private static String getOSLsbReleaseData() {
-        String fullData = "";
+    private final Path osReleasePath;
+    private final Path procStatPath;
+    private final CommandRunner runner;
 
-        fullData += HardwareInfoUtils.executeCommand("lsb_release", "-a");
-
-        return fullData;
+    public UnixOSInfo() {
+        this(DEFAULT_OS_RELEASE, DEFAULT_PROC_STAT, SystemCommandRunner.defaultRunner());
     }
 
-    private static String getOSStartTimeData() {
-        String fullData = "";
-
-        fullData += HardwareInfoUtils.executeCommand("last", "-x");
-
-        return fullData;
+    public UnixOSInfo(CommandRunner runner) {
+        this(DEFAULT_OS_RELEASE, DEFAULT_PROC_STAT, runner);
     }
 
-    private static String getOSReleaseData() {
-        final StringBuilder buffer = new StringBuilder();
-        try (Stream<String> streamProcessorInfo = HardwareInfoUtils.readFile(OS_RELEASE)) {
-            streamProcessorInfo.forEach(line -> buffer.append(line).append("\r\n"));
-        }
-
-        return buffer.toString();
+    UnixOSInfo(Path osReleasePath, Path procStatPath, CommandRunner runner) {
+        this.osReleasePath = osReleasePath == null ? DEFAULT_OS_RELEASE : osReleasePath;
+        this.procStatPath = procStatPath == null ? DEFAULT_PROC_STAT : procStatPath;
+        this.runner = runner == null ? SystemCommandRunner.defaultRunner() : runner;
     }
 
     @Override
-    protected Map<String, String> parseInfo() {
-        Map<String, String> osDataMap = new HashMap<>();
-        
-        String lsbRelease = getOSLsbReleaseData();
-        String[] dataStringLines = lsbRelease.split(LINE_BREAK_REGEX);
+    protected ParsedData parseInfoData() {
+        ParsedData data = ParsedData.empty();
+        List<String> lines = HardwareInfoUtils.readLines(osReleasePath.toString());
 
-        for (final String dataLine : dataStringLines) {
-            String[] dataStringInfo = dataLine.split(":");
-            osDataMap.put(dataStringInfo[0].trim(), (dataStringInfo.length == 2) ? dataStringInfo[1].trim() : "");
-        }
-        
-        String osRelease = getOSReleaseData();
-        dataStringLines = osRelease.split(LINE_BREAK_REGEX);
-
-        for (final String dataLine : dataStringLines) {
-            String[] dataStringInfo = dataLine.split("=");
-            osDataMap.put(HardwareInfoUtils.toCamelCase("OS_" + dataStringInfo[0].trim()), 
-                    (dataStringInfo.length == 2) ? dataStringInfo[1].trim().replaceAll("\"", "") : "");
-        }
-        
-        String startTimeFullData = getOSStartTimeData();
-        dataStringLines = startTimeFullData.split(LINE_BREAK_REGEX);
-
-        for (final String dataLine : dataStringLines) {
-            if (dataLine.startsWith("reboot")) {
-                osDataMap.put("LastBootTime", normalizeBootUpDate(dataLine.substring(39, 55)));
-                break;
+        if (!lines.isEmpty()) {
+            Map<String, String> release = parseOsRelease(lines);
+            release.forEach((key, value) -> data.put(
+                    HardwareInfoUtils.toCamelCase("OS_" + key), value));
+            data.put("Name", HardwareInfoUtils.firstNonBlank(
+                    release.get("PRETTY_NAME"), release.get("NAME")));
+            data.put("Manufacturer", HardwareInfoUtils.firstNonBlank(
+                    release.get("NAME"), release.get("ID")));
+            data.put("Version", HardwareInfoUtils.firstNonBlank(
+                    release.get("VERSION_ID"), release.get("VERSION"),
+                    release.get("BUILD_ID")));
+        } else {
+            data.warn("/etc/os-release is not available; falling back to lsb_release");
+            CommandResult result = runner.run("lsb_release", "-a");
+            if (result.isSuccess() && !result.stdout().trim().isEmpty()) {
+                Map<String, String> lsb = HardwareInfoUtils
+                        .parseKeyValueLines(Arrays.asList(result.stdout().split("\\R")), ":");
+                data.putAll(lsb);
+                data.put("Manufacturer", lsb.get("Distributor ID"));
+                data.put("Name", HardwareInfoUtils.firstNonBlank(
+                        lsb.get("Description"), lsb.get("Distributor ID")));
+                data.put("Version", lsb.get("Release"));
+            } else {
+                data.warn("lsb_release is not available");
             }
         }
-        
-        //Set named data
-        osDataMap.put("Manufacturer", osDataMap.get("Distributor ID"));
-        osDataMap.put("Name", osDataMap.get("Description"));
-        osDataMap.put("Version", osDataMap.get("Release"));
-      
-        return osDataMap;
+
+        readBootTime(procStatPath).ifPresent(seconds -> data.put("LastBootTime",
+                Instant.ofEpochSecond(seconds).toString()));
+
+        if (data.get("Name") == null) {
+            data.warn("The operating-system name could not be determined");
+        }
+        return data;
     }
-    
-    private static String normalizeBootUpDate(String rawBootUpdate) {
-         DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm yyyy", Locale.ENGLISH);
-         Date returnedDate;
-         try{
-             returnedDate = df.parse(rawBootUpdate + " " + Calendar.getInstance().get(Calendar.YEAR));
-         } catch(ParseException pe) {
-             return rawBootUpdate;
-         }
-         
-         return returnedDate.toString();
+
+    /**
+     * Parses an {@code os-release} file.
+     *
+     * @param lines file lines
+     * @return keys and unquoted values
+     */
+    static Map<String, String> parseOsRelease(List<String> lines) {
+        Map<String, String> values = new LinkedHashMap<>();
+        for (String line : lines) {
+            if (line == null) {
+                continue;
+            }
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                continue;
+            }
+            int separator = trimmed.indexOf('=');
+            if (separator <= 0) {
+                continue;
+            }
+            String key = trimmed.substring(0, separator).trim();
+            String value = HardwareInfoUtils.stripQuotes(
+                    trimmed.substring(separator + 1).trim());
+            value = value.replace("\\\"", "\"")
+                    .replace("\\'", "'")
+                    .replace("\\\\", "\\");
+            if (!key.isEmpty()) {
+                values.put(key, value);
+            }
+        }
+        return values;
     }
+
+    /**
+     * Reads the boot time from {@code /proc/stat}.
+     *
+     * @param procStat path to {@code /proc/stat}
+     * @return seconds since the epoch, if present
+     */
+    static Optional<Long> readBootTime(Path procStat) {
+        for (String line : HardwareInfoUtils.readLines(procStat.toString())) {
+            if (line.startsWith("btime ")) {
+                long seconds = HardwareInfoUtils.parseLong(
+                        line.substring("btime ".length()).trim(), -1L);
+                return seconds < 0L ? Optional.empty() : Optional.of(seconds);
+            }
+        }
+        return Optional.empty();
+    }
+    @Override
+    @Deprecated
+    protected java.util.Map<String, String> parseInfo() {
+        return parseInfoData().values();
+    }
+
 }

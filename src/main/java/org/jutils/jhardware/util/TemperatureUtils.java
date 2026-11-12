@@ -1,11 +1,9 @@
 /*
- * Copyright 2016 Javier Garcia Alonso.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,101 +13,153 @@
  */
 package org.jutils.jhardware.util;
 
-import com.profesorfalken.jsensors.JSensors;
-import com.profesorfalken.jsensors.model.components.Cpu;
-import com.profesorfalken.jsensors.model.sensors.Temperature;
-import com.profesorfalken.wmi4java.WMI4Java;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * This class handles component temperatures<p>
+ * CPU temperature discovery.
  *
- * It tries first using jSensors. If it fails, it tries with an OS specific
- * method.
- *
- * @author Javier Garcia Alonso
+ * <p>jSensors is tried first because it understands the platform-specific
+ * sensor layout. On Linux the sysfs thermal zones are used as a fallback,
+ * preferring CPU package zones over the generic ACPI zone.</p>
  */
 public class TemperatureUtils {
-    private static final String NOT_DETECTED = "NOT DETECTED";
-    
-    private static final String CPUTEMP_THERMAL_ROOT = "/sys/class/thermal/thermal_zone";
-    private static final String CPUTEMP_THERMAL_FILE = "temp";
 
-    private static String getCpuTemperatureByjSensors() {
-        List<Cpu> cpus = JSensors.get.components().cpus;
-        if (cpus.size() > 0) {
-            //For the moment jHardware only handles 1 temperature of processor
-            Cpu cpu = cpus.get(0);
-            if (cpu.sensors.temperatures != null && cpu.sensors.temperatures.size() > 0) {
-                for (Temperature temp : cpu.sensors.temperatures) {
-                    if (temp.value != null) {
-                        //We cast and round to integer and convert to String
-                        return String.valueOf(temp.value.intValue());
-                    }
-                }
-            }
-        }
-        return NOT_DETECTED;
+    public static final String NOT_DETECTED = "NOT DETECTED";
+
+    private static final Path THERMAL_ROOT = Paths.get("/sys/class/thermal");
+
+    public TemperatureUtils() {
     }
 
-    public static String getCpuTemperatureForWindows() {
-        //First, try by jSensors
-        String temperature = getCpuTemperatureByjSensors();
-
-        //First try with Win32_TemperatureProbe 
-        //TODO: should be nice but it is not supported
-        //https://msdn.microsoft.com/en-us/library/aa394493(v=vs.85).aspx
-        //Most of the information that the Win32_TemperatureProbe WMI class provides
-        //comes from SMBIOS. Real-time readings for the CurrentReading property 
-        //cannot be extracted from SMBIOS tables. For this reason, 
-        //current implementations of WMI do not populate the CurrentReading property. 
-        //The CurrentReading property's presence is reserved for future use.
-        /*Map<String, String> temperatureProbeDataMap = 
-         WMI4Java.get().VBSEngine().getWMIObject("Win32_TemperatureProbe");*/
-        //We take the temperature from MSAcpi_ThermalZoneTemperature
-        //This is not optimal since most manufacturers does not fill this information.
-        //Moreover, the values are not updated in real time.
-        //It does not even give a temperature separated by core.
-        if (NOT_DETECTED.equals(temperature)) {
-            Map<String, String> temperatureDataMap
-                    = WMI4Java.get().VBSEngine().namespace("root/wmi").getWMIObject("MSAcpi_ThermalZoneTemperature");
-
-            if (temperatureDataMap.containsKey("CurrentTemperature")) {
-                //Convert from tens of kelvin to centigrades
-                temperature = String.valueOf(Integer.valueOf(temperatureDataMap.get("CurrentTemperature")) / 10 - 273);
-            } else {
-                temperature = NOT_DETECTED;
-            }
-        }
-        
-        return temperature;
-    }
-
+    /**
+     * @return CPU temperature in Celsius, or {@link #NOT_DETECTED}
+     */
     public static String getCpuTemperatureForLinux() {
-        //First, try by jSensors
-        String temperature = getCpuTemperatureByjSensors();
-        
-        //https://www.kernel.org/doc/Documentation/thermal/sysfs-api.txt
-        //Second try: /sys/class/thermal
-        if (NOT_DETECTED.equals(temperature)) {
-            int sensorIndex = 0;
-            while (true) {
-                if (new File(CPUTEMP_THERMAL_ROOT + sensorIndex).exists()) {
-                    String tempFile = CPUTEMP_THERMAL_ROOT + sensorIndex++ + "/" + CPUTEMP_THERMAL_FILE;
-                    String value = HardwareInfoUtils.getSingleValueFromFile(tempFile);
-                    if (value != null && !value.isEmpty()) {
-                        temperature = String.valueOf(Integer.valueOf(value.trim()) / 1000);
-                        break;
-                    }
-                } else {
-                    temperature = NOT_DETECTED;
-                    break;
-                }
-            }
+        String sensorsValue = JsensorsSupport.cpuTemperature();
+        if (sensorsValue != null) {
+            return sensorsValue;
         }
-        
-        return temperature;
+        return readLinuxThermalZone(THERMAL_ROOT).orElse(NOT_DETECTED);
+    }
+
+    /**
+     * @return CPU temperature in Celsius, or {@link #NOT_DETECTED}
+     */
+    public static String getCpuTemperatureForWindows() {
+        String sensorsValue = JsensorsSupport.cpuTemperature();
+        if (sensorsValue != null) {
+            return sensorsValue;
+        }
+
+        Map<String, String> values = WmiSupport.object("root/wmi",
+                "MSAcpi_ThermalZoneTemperature");
+        String raw = values.get("CurrentTemperature");
+        if (raw == null) {
+            return NOT_DETECTED;
+        }
+        try {
+            double tenthsKelvin = Double.parseDouble(raw.trim());
+            double celsius = tenthsKelvin / 10.0 - 273.15;
+            if (celsius < -50.0 || celsius > 200.0) {
+                return NOT_DETECTED;
+            }
+            return String.valueOf(Math.round(celsius));
+        } catch (NumberFormatException ex) {
+            return NOT_DETECTED;
+        }
+    }
+
+    /**
+     * Reads the best thermal zone under a root directory.
+     *
+     * @param thermalRoot directory containing {@code thermal_zoneN} entries
+     * @return temperature in Celsius, or empty
+     */
+    static Optional<String> readLinuxThermalZone(Path thermalRoot) {
+        if (thermalRoot == null || !Files.isDirectory(thermalRoot)) {
+            return Optional.empty();
+        }
+        List<Zone> zones = new ArrayList<>();
+        try (java.util.stream.Stream<Path> paths = Files.list(thermalRoot)) {
+            paths.filter(Files::isDirectory)
+                    .filter(path -> HardwareInfoUtils.fileName(path).startsWith("thermal_zone"))
+                    .sorted(Comparator.comparing(path -> HardwareInfoUtils.fileName(path)))
+                    .forEach(path -> readZone(path).ifPresent(zones::add));
+        } catch (IOException | SecurityException ex) {
+            return Optional.empty();
+        }
+        return zones.stream()
+                .max(Comparator.comparingInt(Zone::score))
+                .map(zone -> String.valueOf(Math.round(zone.celsius())));
+    }
+
+    private static Optional<Zone> readZone(Path zonePath) {
+        Optional<String> type = HardwareInfoUtils.readValue(zonePath.resolve("type"));
+        Optional<String> raw = HardwareInfoUtils.readValue(zonePath.resolve("temp"));
+        if (!raw.isPresent()) {
+            return Optional.empty();
+        }
+        try {
+            double value = Double.parseDouble(raw.get());
+            double celsius = value >= 1_000.0 ? value / 1_000.0 : value;
+            if (celsius < -50.0 || celsius > 200.0) {
+                return Optional.empty();
+            }
+            return Optional.of(new Zone(type.orElse(""), celsius, score(type.orElse(""))));
+        } catch (NumberFormatException ex) {
+            return Optional.empty();
+        }
+    }
+
+    private static int score(String type) {
+        String normalized = type.toLowerCase(Locale.ROOT);
+        if (normalized.contains("x86_pkg_temp")) {
+            return 100;
+        }
+        if (normalized.contains("coretemp") || normalized.contains("k10temp")
+                || normalized.contains("cpu")) {
+            return 90;
+        }
+        if (normalized.contains("soc")) {
+            return 80;
+        }
+        if (normalized.contains("acpitz")) {
+            return 10;
+        }
+        return 50;
+    }
+
+    private static final class Zone {
+
+        private final String type;
+        private final double celsius;
+        private final int score;
+
+        Zone(String type, double celsius, int score) {
+            this.type = type;
+            this.celsius = celsius;
+            this.score = score;
+        }
+
+        String type() {
+            return type;
+        }
+
+        double celsius() {
+            return celsius;
+        }
+
+        int score() {
+            return score;
+        }
     }
 }

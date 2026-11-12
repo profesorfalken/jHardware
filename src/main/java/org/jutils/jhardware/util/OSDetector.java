@@ -13,33 +13,33 @@
  */
 package org.jutils.jhardware.util;
 
+import java.util.Locale;
+
 /**
- * Detects used OS
- * 
- * @author Javier Garcia Alonso
+ * Legacy OS detector kept for source compatibility.
+ *
+ * @deprecated use {@link OsFamily#current()} instead
  */
+@Deprecated
 public class OSDetector {
-    private static final String OS = System.getProperty("os.name").toLowerCase();
-    
-     /**
-     * Hide constructor
-     */
+
     private OSDetector() {
-    }    
+    }
 
     public static boolean isWindows() {
-        return OS.contains("win");
+        return OsFamily.current().isWindows();
     }
 
     public static boolean isMac() {
-        return OS.contains("mac");
+        return OsFamily.current() == OsFamily.MACOS;
     }
 
     public static boolean isUnix() {
-        return OS.contains("nix") || OS.contains("nux") || OS.contains("aix");
+        return OsFamily.current().isUnix();
     }
 
     public static boolean isSolaris() {
-        return OS.contains("sunos");
+        return System.getProperty("os.name", "").toLowerCase(Locale.ROOT)
+                .contains("sunos");
     }
 }
