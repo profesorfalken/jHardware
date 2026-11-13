@@ -189,48 +189,6 @@ runs the platform-independent tests. The suite is also executed on a real
 Temurin 8 runtime, and the published classes use Java 8 bytecode (major version
 52).
 
-## Compatibility with 0.8.6
-
-The public and protected API is **binary and source compatible** with 0.8.6
-according to japicmp: existing calls to `HardwareInfo`, the model getters and
-setters, `HardwareFactory`, `HardwareInfoUtils`, `OSDetector`,
-`DirectXInfoLoader`, `UnixProcessorInfo.getProcessorData`, and subclasses of the
-`Abstract*Info` classes continue to compile and run. `ComponentInfo` keeps
-default methods, so third-party implementations also remain valid.
-
-The serialized form is **not compatible**: models gained fields and a common
-superclass. Do not deserialize 0.8.6 snapshots into 1.0.0.
-
-Behavioral differences are intentional:
-
-- Lists returned by the models are unmodifiable.
-- Snapshots expose `getWarnings()` and `getFullInfo()` everywhere.
-- Missing optional tools produce empty values plus warnings instead of
-  exceptions.
-- `getSingleValueFromFile` returns `null` instead of throwing
-  `NoSuchElementException`; `extractText` returns `NOT_FOUND` instead of
-  throwing `IllegalStateException`.
-- Unsupported operating systems still throw an
-  `UnsupportedOperationException` subtype.
-
-## Migration from 0.8.6
-
-Version 1.0.0 is a major release:
-
-- Java 8 or newer is required.
-- JUnit 5 replaces JUnit 4; `mvn test` now works with current Surefire.
-- macOS is explicitly unsupported.
-- Built-in providers never invoke `sudo`; `dmidecode` is an unprivileged
-  fallback. The deprecated `isSudo()` helper is retained for compatibility.
-- Linux network no longer requires `ifconfig`; display no longer requires
-  `xrandr`; graphics cards no longer require `lshw`.
-- `getFullInfo()` and `getWarnings()` are available on every component model.
-- Memory models add normalized `*Bytes` accessors.
-- `HardwareInfoUtils.getSingleValueFromFile` returns `null` instead of throwing
-  `NoSuchElementException`; `extractText` returns `NOT_FOUND` instead of throwing
-  `IllegalStateException`.
-- `HardwareInfoService` and `CommandRunner` are the supported extension points.
-
 ## Similar projects
 
 - [OSHI](https://github.com/oshi/oshi) uses JNA and provides broader native
