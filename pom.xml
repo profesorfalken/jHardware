@@ -34,7 +34,7 @@
         <connection>scm:git:https://github.com/profesorfalken/jHardware.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/profesorfalken/jHardware.git</developerConnection>
         <url>https://github.com/profesorfalken/jHardware</url>
-        <tag>jHardware-1.0.0</tag>
+        <tag>v1.0.0</tag>
     </scm>
 
     <issueManagement>
