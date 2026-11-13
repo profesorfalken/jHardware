@@ -1,8 +1,10 @@
 # jHardware
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.jhardware/jHardware.svg)](https://central.sonatype.com/artifact/org.jhardware/jHardware)
-[![License](https://img.shields.io/github/license/profesorfalken/jHardware.svg)](https://github.com/profesorfalken/jHardware/blob/master/LICENSE)
-[![Build](https://github.com/profesorfalken/jHardware/actions/workflows/build.yml/badge.svg)](https://github.com/profesorfalken/jHardware/actions/workflows/build.yml)
+![](https://img.shields.io/maven-central/v/org.jhardware/jHardware.svg)
+[![CI](https://github.com/profesorfalken/jHardware/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/profesorfalken/jHardware/actions/workflows/ci.yml)
+[![Javadoc](https://javadoc.io/badge2/org.jhardware/jHardware/javadoc.svg)](https://javadoc.io/doc/org.jhardware/jHardware)
+![](https://img.shields.io/badge/Java-8%2B-orange)
+![](https://img.shields.io/github/license/profesorfalken/jHardware.svg)
 
 Cross-platform hardware information for Java. jHardware returns typed snapshots
 for the CPU, memory, BIOS, motherboard, operating system, network interfaces,
